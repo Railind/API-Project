@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
+          // unique: true,
           len: [4, 30],
           isNotEmail(value) {
             if (Validator.isEmail(value)) {
@@ -27,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: [3, 256],
-          isEmail: true
+          isEmail: true,
+          // unique: true
         }
       },
       hashedPassword: {
