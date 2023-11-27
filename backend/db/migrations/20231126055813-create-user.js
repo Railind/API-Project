@@ -27,13 +27,18 @@ module.exports = {
         type: Sequelize.STRING
       },
       username: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
       },
       hashedPassword: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         defaultValue: Sequelize.literal(`CURRENT_TIMESTAMP`),
@@ -41,7 +46,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       updatedAt: {
-        defaultValue: Sequelize.literal(`CURRENT_TIMESTAMP`)
+        defaultValue: Sequelize.literal(`CURRENT_TIMESTAMP`),
         allowNull: false,
         type: Sequelize.DATE
       }

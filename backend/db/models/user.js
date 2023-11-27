@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
         validate: {
-          // unique: true,
           len: [4, 30],
           isNotEmail(value) {
             if (Validator.isEmail(value)) {
@@ -31,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           len: [3, 256],
           isEmail: true,
-          // unique: true
         }
       },
       firstname: {
