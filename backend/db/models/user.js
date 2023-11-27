@@ -32,13 +32,13 @@ module.exports = (sequelize, DataTypes) => {
           isEmail: true,
         }
       },
-      firstname: {
+      firstName: {
         type: DataTypes.STRING,
         validate: {
           isAlpha: true
         }
       },
-      lastname: {
+      lastName: {
         type: DataTypes.STRING,
         validate: {
           isAlpha: true
