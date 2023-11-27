@@ -1,15 +1,10 @@
 'use strict';
-
-const { sequelize } = require('../models');
-
 /** @type {import('sequelize-cli').Migration} */
-
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
-  options.schema = process.env.SCHEMA;  // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
-
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -19,12 +14,6 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
-      },
-      firstname: {
-        type: Sequelize.STRING
-      },
-      lastname: {
-        type: Sequelize.STRING
       },
       username: {
         type: Sequelize.STRING,
@@ -38,22 +27,22 @@ module.exports = {
       },
       hashedPassword: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
-        defaultValue: Sequelize.literal(`CURRENT_TIMESTAMP`),
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
-        defaultValue: Sequelize.literal(`CURRENT_TIMESTAMP`),
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = 'Users'
-    await queryInterface.dropTable(options);
+    options.tableName = 'Users';
+    return queryInterface.dropTable(options);
   }
 };

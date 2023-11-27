@@ -33,10 +33,16 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       firstname: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        validate: {
+          isAlpha: true
+        }
       },
       lastname: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        validate: {
+          isAlpha: true
+        }
       },
       hashedPassword: {
         type: DataTypes.STRING.BINARY,
