@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      GroupImages.belongsTo(
+        models.Groups,
+        { foreignKey: 'groupId' }
+      );
     }
   }
   GroupImages.init({
