@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Venues extends Model {
+  class Venue extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,17 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Venues.hasMany(
-        models.Events,
+      Venue.hasMany(
+        models.Event,
         { foreignKey: 'venueId', hooks: true }
       );
-      Venues.belongsTo(
-        models.Groups,
+      Venue.belongsTo(
+        models.Group,
         { foreignKey: 'groupId' }
       );
     }
   }
-  Venues.init({
+  Venue.init({
     groupId: DataTypes.INTEGER,
     address: DataTypes.STRING,
     city: DataTypes.STRING,
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: DataTypes.DATE
   }, {
     sequelize,
-    modelName: 'Venues',
+    modelName: 'Venue',
   });
-  return Venues;
+  return Venue;
 };

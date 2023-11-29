@@ -6,15 +6,15 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(
-        models.Attendances,
+        models.Attendance,
         { foreignKey: 'userId', hooks: true }
       );
       User.hasMany(
-        models.Groups,
+        models.Group,
         { foreignKey: 'organizerId', hooks: true }
       );
       User.hasMany(
-        models.Memberships,
+        models.Membership,
         { foreignKey: 'userId', hooks: true }
       );
     }

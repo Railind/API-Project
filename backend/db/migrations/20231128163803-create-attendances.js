@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.ENUM
+        type: Sequelize.STRING
       },
       createdAt: {
         type: Sequelize.DATE

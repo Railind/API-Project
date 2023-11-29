@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       type: {
-        type: Sequelize.ENUM
+        type: Sequelize.STRING
       },
       private: {
         type: Sequelize.BOOLEAN
