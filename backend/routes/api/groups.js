@@ -17,18 +17,24 @@ router.post(
         const group = await Group.create({ organizerId, name, about, type, private, city, state });
 
         const newGroup = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            username: user.username,
+            id: group.id,
+            name: group.name,
+            about: group.about,
+            type: group.type,
+            private: group.private,
+            city: group.city,
+            state: group.state
         };
-
+        res.status(201)
         return res.json({
-            user: safeUser
+            group: newGroup
         });
     }
 );
+
+router.delete('/:groupId' async (req, res) => {
+
+})
 
 
 router.get(
