@@ -25,8 +25,6 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     groupId: DataTypes.INTEGER,
     status: DataTypes.STRING,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Membership',
