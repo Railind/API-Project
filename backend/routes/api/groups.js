@@ -94,6 +94,15 @@ router.get('/current', requireAuth, async (req, res) => {
             model: Membership,
             where: { userId: user.id },
         },
+        include: [
+            {
+                model: GroupImage,
+                attributes: ['url'],
+                where: { preview: true },
+                required: false,
+                separate: true,
+                limit: 1,
+            },]
         // attributes: {
         //     include: [[
         //         Sequelize.literal(`(
@@ -131,12 +140,12 @@ router.get('/:groupId', requireAuth, async (req, res) => {
         include: [
             {
                 model: GroupImage,
-                attributes: ['url'],
-                where: { preview: true },
+                attributes: ['id', 'url', 'preview'],
+                // where: { userId: organizerId },
                 required: false,
                 separate: true,
-                limit: 1,
             },
+
             // {
             //     model: User,
             //     attributes: ['url'],
@@ -154,6 +163,13 @@ router.get('/:groupId', requireAuth, async (req, res) => {
             //     limit: 1,
             // },
         ],
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'fisrtName', 'lastName'],
+                required: false,
+                separate: true,
+            }]
     }
 
         // attributes: {
