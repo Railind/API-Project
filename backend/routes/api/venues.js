@@ -9,6 +9,10 @@ const { Group, Membership, GroupImage, Venue } = require('../../db/models');
 
 const router = express.Router();
 
+//Edit a new venue by id
+router.put('/:venueId', requireAuth, async (req, res) => {
+    const { groupId } = req.params
+});
 
 router.get('/', requireAuth, async (req, res) => {
     const venues = await Venue.findAll({

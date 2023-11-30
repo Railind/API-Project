@@ -170,9 +170,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
     const { groupId } = req.params
 });
 
-router.put('/:groupId/venues', requireAuth, async (req, res) => {
-    const { groupId } = req.params
-});
+
 
 
 module.exports = router;
