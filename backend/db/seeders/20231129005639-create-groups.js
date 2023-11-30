@@ -23,7 +23,7 @@ module.exports = {
     */
     await Group.bulkCreate([
       {
-        groupId: 1,
+        organizerId: 1,
         name: 'Dudes and Cars',
         about: 'This is a fun group for car enthusiasts!',
         type: 'Public',
@@ -32,7 +32,7 @@ module.exports = {
         state: 'Oklahoma'
       },
       {
-        groupId: 2,
+        organizerId: 2,
         name: 'Artists United',
         about: 'This is a fun group for art enthusiasts!',
         type: 'Public',

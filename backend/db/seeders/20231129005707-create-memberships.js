@@ -21,11 +21,11 @@ module.exports = {
      * }], {});
     */
     await Membership.bulkCreate([
-      {
-        userId: 1,
-        groupId: 1,
-        status: 'Admin',
-      },
+      // {
+      //   userId: 1,
+      //   groupId: 1,
+      //   status: 'Admin',
+      // },
       {
         userId: 1,
         groupId: 2,
