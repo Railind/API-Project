@@ -25,22 +25,20 @@ router.get('/:eventId', async (req, res) => {
 //Get all Events
 router.get('/', requireAuth, async (req, res) => {
     const events = await Event.findAll({
-        include: {
+        include: [{
             model: EventImage,
             where: {
                 preview: true
             },
             limit: 1,
             attributes: ['url'],
-        },
-        include: {
+        }, {
             model: Group,
             attributes: ['id', 'name', 'city', 'state'],
-        },
-        include: {
+        }, {
             model: Venue,
             attributes: ['id', 'city', 'state'],
-        },
+        }]
     });
 
 

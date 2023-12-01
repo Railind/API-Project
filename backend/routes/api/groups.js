@@ -9,31 +9,59 @@ const { Group, Membership, GroupImage, Venue, Event } = require('../../db/models
 
 const router = express.Router();
 
-router.post(
-    '/',
 
-    // validateSignup,
-    async (req, res) => {
-        await requireAuth
-        const { user } = req
-        let organizerId = user.id
-        const { name, about, type, private, city, state } = req.body;
-        const group = await Group.create({ organizerId, name, about, type, private, city, state });
 
-        const newGroup = {
-            id: group.id,
-            name: group.name,
-            about: group.about,
-            type: group.type,
-            private: group.private,
-            city: group.city,
-            state: group.state
-        };
-        res.status(201)
-        return res.json({
-            group: newGroup
-        });
-    }
+const validateGroups = [
+    check('name')
+        .exists({ checkFalsy: true })
+        .isLength({ max: 4 })
+        .withMessage('Name must be 60 characters or less'),
+    check('about')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 50 })
+        .withMessage('About must be 50 characters or more'),
+    check('type')
+        .not()
+        .isEmail()
+        .withMessage('Username cannot be an email.'),
+    check('private')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 6 })
+        .withMessage('Password must be 6 characters or more.'),
+    check('city')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 6 })
+        .withMessage('Password must be 6 characters or more.'),
+    check('state')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 6 })
+        .withMessage('Password must be 6 characters or more.'),
+    handleValidationErrors
+];
+
+
+
+
+router.post('/', requireAuth, validateGroups, async (req, res) => {
+    const { user } = req
+    let organizerId = user.id
+    const { name, about, type, private, city, state } = req.body;
+    const group = await Group.create({ organizerId, name, about, type, private, city, state });
+
+    const newGroup = {
+        id: group.id,
+        name: group.name,
+        about: group.about,
+        type: group.type,
+        private: group.private,
+        city: group.city,
+        state: group.state
+    };
+    res.status(201)
+    return res.json({
+        group: newGroup
+    });
+}
 );
 
 //Delete Current Group
@@ -93,11 +121,10 @@ router.get('/current', requireAuth, async (req, res) => {
         where: { organizerId: user.id }
     });
     const groupMemberships = await Group.findAll({
-        include: {
+        include: [{
             model: Membership,
             where: { userId: user.id },
         },
-        include:
         {
             model: GroupImage,
             attributes: ['url'],
@@ -105,7 +132,7 @@ router.get('/current', requireAuth, async (req, res) => {
             required: false,
             separate: true,
             limit: 1,
-        },
+        }]
     });
     return res.json([...groups, ...groupMemberships]);
 });
@@ -113,66 +140,8 @@ router.get('/current', requireAuth, async (req, res) => {
 //Get group by Id
 router.get('/:groupId', requireAuth, async (req, res) => {
     const { groupId } = req.params
-    const group = await Group.findByPk(groupId, {
-        attributes: {
-            include: [
-                [
-                    Sequelize.literal(`(
-            SELECT COUNT(*)
-            FROM "Memberships"
-            WHERE "Memberships"."groupId" = "Group"."id"
-            AND "Memberships"."status" IN ('Admin', 'Member')
-          )`),
-                    'numMembers'
-                ]
-            ],
-        },
-        include: [
-            {
-                model: GroupImage,
-                attributes: ['id', 'url', 'preview'],
-                // where: { userId: organizerId },
-                required: false,
-                separate: true,
-            },
+    const group = await Group.findByPk(groupId,
 
-            // {
-            //     model: User,
-            //     attributes: ['url'],
-            //     where: { preview: true },
-            //     required: false,
-            //     separate: true,
-            //     limit: 1,
-            // },
-            // {
-            //     model: GroupImage,
-            //     attributes: ['url'],
-            //     where: { preview: true },
-            //     required: false,
-            //     separate: true,
-            //     limit: 1,
-            // },
-        ],
-        include: [
-            {
-                model: User,
-                attributes: ['id', 'fisrtName', 'lastName'],
-                required: false,
-                separate: true,
-            }]
-    }
-
-        // attributes: {
-        //     include: [[
-        //         Sequelize.literal(`(
-        //     SELECT COUNT(*)
-        //     FROM "Memberships"
-        //     WHERE "Memberships"."groupId" = "Group"."id"
-        //       AND "Memberships"."status" IN ('Admin', 'Member')
-        // )`),
-        //         'memberCount'
-        //     ]],
-        // },
     );
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
@@ -360,9 +329,27 @@ router.delete('/:groupId/membership', requireAuth, async (req, res) => {
 
 })
 
-// ATTENDEES
+// IMAGES
 // ------------------------------------
 
+router.post('/:groupId/images', requireAuth, async (req, res) => {
+    const { groupId } = req.params
+    const group = await Group.findByPk(groupId)
+    if (!group) {
+        return res.status(404).json({ message: "Group couldn't be found" });
+    }
+    res.status(200)
+    const { url, preview } = req.body;
+    const groupImage = await GroupImage.create({ url, preview });
+
+    const newImage = {
+        id: groupImage.id,
+        url: groupImage.url,
+        preview: groupImage.preview
+    };
+
+    return res.json(newImage);
+})
 
 
 module.exports = router;
