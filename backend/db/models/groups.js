@@ -35,12 +35,44 @@ module.exports = (sequelize, DataTypes) => {
   }
   Group.init({
     organizerId: DataTypes.INTEGER,
-    name: DataTypes.STRING,
-    about: DataTypes.TEXT,
-    type: DataTypes.STRING,
-    private: DataTypes.BOOLEAN,
-    city: DataTypes.STRING,
-    state: DataTypes.STRING,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1, 60],
+      }
+    },
+    about: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      // validate: {
+      //   len: {
+      //     args: [50],
+      //     msg: 'The attribute must have at least 60 characters.',
+      //   },
+      // },
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      // validate: {
+      //   isIn: {
+      //     args: [['In Person', 'Online']],
+      //     msg: "Type must be 'Online' or 'In person'",
+      //   },
+      // },
+    },
+    private: {
+      type: DataTypes.BOOLEAN,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'Group',

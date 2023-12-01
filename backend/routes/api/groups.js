@@ -9,12 +9,6 @@ const { Group, Membership, GroupImage, Venue, Event } = require('../../db/models
 
 const router = express.Router();
 
-// const validateGroup = [
-//     check('id')
-//         .exists
-//         .withMessage("Group Couldn't be found")
-// ]
-
 router.post(
     '/',
 
@@ -57,30 +51,39 @@ router.delete('/:groupId', async (req, res) => {
 
 
 //Update Current Group
-router.put(
-    '/:groupId',
-    // validateSignup,
-    async (req, res) => {
-        await requireAuth
-        const { organizerId, name, about, type, private, city, state } = req.body;
-        let updatedGroup = await Group.findByPk(req.params.groupId)
+router.put('/:groupId', requireAuth, async (req, res) => {
+    try {
+        const { user } = req
+        const { name, about, type, private, city, state } = req.body;
 
-        updatedGroup = {
-            id: updatedGroup.id,
-            name: updatedGroup.name,
-            about: updatedGroup.about,
-            type: updatedGroup.type,
-            private: updatedGroup.private,
-            city: updatedGroup.city,
-            state: updatedGroup.state,
-        };
+        let updatedGroup = await Group.findByPk(req.params.groupId);
+        if (user.id !== updatedGroup.organizerId) {
+            console.error({ error: 'User does not own current group.' });
+            res.status(500).json({ error: 'User does not own current group.' });
+        }
 
-        updatedGroup.save()
-        res.status(201)
-        return res.json({
+        if (!updatedGroup) {
+            return res.status(404).json({ error: 'Group not found' });
+        }
+
+        updatedGroup.name = name || updatedGroup.name;
+        updatedGroup.about = about || updatedGroup.about;
+        updatedGroup.type = type || updatedGroup.type;
+        updatedGroup.private = private || updatedGroup.private;
+        updatedGroup.city = city || updatedGroup.city;
+        updatedGroup.state = state || updatedGroup.state;
+        updatedGroup.updatedAt = new Date();
+
+        await updatedGroup.save();
+
+        res.status(200).json({
             group: updatedGroup
         });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
+}
 );
 
 //Get all groups of current user
@@ -94,29 +97,16 @@ router.get('/current', requireAuth, async (req, res) => {
             model: Membership,
             where: { userId: user.id },
         },
-        include: [
-            {
-                model: GroupImage,
-                attributes: ['url'],
-                where: { preview: true },
-                required: false,
-                separate: true,
-                limit: 1,
-            },]
-        // attributes: {
-        //     include: [[
-        //         Sequelize.literal(`(
-        //     SELECT COUNT(*)
-        //     FROM "Memberships"
-        //     WHERE "Memberships"."groupId" = "Group"."id"
-        //       AND "Memberships"."status" IN ('Admin', 'Member')
-        // )`),
-        //         'memberCount'
-        //     ]],
-        // },
+        include:
+        {
+            model: GroupImage,
+            attributes: ['url'],
+            where: { preview: true },
+            required: false,
+            separate: true,
+            limit: 1,
+        },
     });
-    console.log(groupMemberships)
-
     return res.json([...groups, ...groupMemberships]);
 });
 
@@ -268,7 +258,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
     return res.json(newVenue);
 });
 
-// Events
+// EVENTS
 // ---------------------------------------
 
 //Get Events by group Id
@@ -314,7 +304,7 @@ router.post('/:groupId/events', requireAuth, async (req, res) => {
 });
 
 
-// Memberships
+// MEMBERSHIPS
 // -------------------------------------------------
 
 //Gets members of a group by Id
@@ -339,7 +329,6 @@ router.post('/:groupId/membership', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const group = await Membership.findByPk(groupId)
     if (!group) {
-        // res.Error("Couldn't find a Group with the specified id")
         return res.status(404).json({ message: "Group couldn't be found" });
     }
     const members = await Membership.findAll({
@@ -348,6 +337,31 @@ router.post('/:groupId/membership', requireAuth, async (req, res) => {
 
     return res.json({ Members: members });
 });
+
+
+router.delete('/:groupId/membership', requireAuth, async (req, res) => {
+    const { groupId } = req.params
+    const { memberId } = req.body
+
+    const group = await Group.findbyPk(groupId)
+    if (!group) {
+        return res.status(404).json({ message: "Group couldn't be found" });
+    }
+
+    const membership = await Membership.findOne({
+        where: {
+            groupId,
+            memberId,
+        }
+    });
+    if (!membership) {
+        return res.status(400).json({ "message": "User couldn't be found" })
+    }
+
+})
+
+// ATTENDEES
+// ------------------------------------
 
 
 
