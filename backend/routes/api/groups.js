@@ -152,39 +152,42 @@ router.get('/:groupId', requireAuth, async (req, res) => {
 });
 //Get all groups
 router.get('/', async (req, res) => {
-    try {
-        const groups = await Group.findAll({
-            attributes: {
-                include: [
-                    [
-                        Sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM "Memberships"
-                WHERE "Memberships"."groupId" = "Group"."id"
-                AND "Memberships"."status" IN ('Admin', 'Member')
-              )`),
-                        'numMembers'
-                    ]
-                ],
-            },
+    const groups = await Group.findAll(
+        {
             include: [
                 {
                     model: GroupImage,
-                    attributes: ['url'],
-                    where: { preview: true },
-                    required: false,
-                    separate: true,
-                    limit: 1,
+                    attributes: ['url', 'preview']
                 },
-            ],
-        });
+                {
+                    model: User
+                }
+            ]
+        })
 
-        return res.json({ Groups: groups });
-    } catch (error) {
-        console.error('Error fetching groups:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
+    let groupsList = [];
+    groups.forEach(group => {
+        groupsList.push(group.toJSON())
+    })
+
+    groupsList.forEach(group => {
+        if (group.GroupImages?.length) {
+            for (let i = 0; i < group.GroupImages.length; i++) {
+                if (group.GroupImages[i].preview === true) {
+                    group.previewImage = group.GroupImages[i].url
+                    break;
+                }
+            }
+        }
+        delete group.GroupImages
+        group.numMembers = group.Users.length
+        delete group.Users
+    })
+
+    return res.json({
+        Groups: groupsList
+    })
+})
 // VENUES
 // '--------------------------------------------------'
 
