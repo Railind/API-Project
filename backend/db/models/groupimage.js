@@ -18,7 +18,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   GroupImage.init({
-    groupId: DataTypes.INTEGER,
+    groupId: {
+      type: DataTypes.INTEGER,
+      references: { model: 'Groups' },
+      onDelete: 'CASCADE'
+    },
     url: DataTypes.STRING,
     preview: DataTypes.BOOLEAN,
   }, {

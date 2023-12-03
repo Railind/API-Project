@@ -22,9 +22,21 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Membership.init({
-    userId: DataTypes.INTEGER,
-    groupId: DataTypes.INTEGER,
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'Users' },
+      onDelete: 'CASCADE'
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'Users' },
+      onDelete: 'CASCADE'
+
+    },
     status: DataTypes.STRING,
+    allowNull: false
   }, {
     sequelize,
     modelName: 'Membership',

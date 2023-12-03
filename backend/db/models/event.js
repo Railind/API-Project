@@ -23,19 +23,28 @@ module.exports = (sequelize, DataTypes) => {
 
       Event.hasMany(
         models.EventImage,
-        { foreignKey: 'eventId', hooks: true }
+        { foreignKey: 'eventId', hooks: true, onDelte: 'CASCADE' }
       );
       Event.hasMany(
         models.Attendance,
-        { foreignKey: 'eventId', hooks: true }
+        { foreignKey: 'eventId', hooks: true, onDelete: 'CASCADE' }
       );
 
     }
   }
   Event.init({
-    venueId: DataTypes.INTEGER,
-    groupId: DataTypes.INTEGER,
-    name: DataTypes.STRING,
+    venueId: {
+      type: DataTypes.INTEGER,
+      references: { model: 'Venues' }
+    },
+    groupId: {
+      type: DataTypes.INTEGER,
+      references: { model: 'Groups' }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     description: DataTypes.TEXT,
     type: DataTypes.STRING,
     capacity: DataTypes.INTEGER,

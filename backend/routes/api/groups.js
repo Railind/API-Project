@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
-const { Group, Membership, GroupImage, Venue, Event } = require('../../db/models');
+const { Group, Membership, GroupImage, Venue, Event, User } = require('../../db/models');
 
 const router = express.Router();
 
@@ -65,7 +65,7 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
 );
 
 //Delete Current Group
-router.delete('/:groupId', async (req, res) => {
+router.delete('/:groupId', requireAuth, async (req, res) => {
     try {
         const deletedGroup = await Group.findByPk(req.params.groupId);
         if (deletedGroup) await deletedGroup.destroy();
@@ -139,7 +139,7 @@ router.get('/current', async (req, res) => {
 });
 
 //Get group by Id
-router.get('/:groupId', requireAuth, async (req, res) => {
+router.get('/:groupId', async (req, res) => {
     const { groupId } = req.params
     const group = await Group.findByPk(groupId,
 
@@ -152,39 +152,42 @@ router.get('/:groupId', requireAuth, async (req, res) => {
 });
 //Get all groups
 router.get('/', async (req, res) => {
-    try {
-        const groups = await Group.findAll({
-            attributes: {
-                include: [
-                    [
-                        Sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM "Memberships"
-                WHERE "Memberships"."groupId" = "Group"."id"
-                AND "Memberships"."status" IN ('Admin', 'Member')
-              )`),
-                        'numMembers'
-                    ]
-                ],
-            },
+    const groups = await Group.findAll(
+        {
             include: [
                 {
                     model: GroupImage,
-                    attributes: ['url'],
-                    where: { preview: true },
-                    required: false,
-                    separate: true,
-                    limit: 1,
+                    attributes: ['url', 'preview']
                 },
-            ],
-        });
+                {
+                    model: User
+                }
+            ]
+        })
 
-        return res.json({ Groups: groups });
-    } catch (error) {
-        console.error('Error fetching groups:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
+    let groupsList = [];
+    groups.forEach(group => {
+        groupsList.push(group.toJSON())
+    })
+
+    groupsList.forEach(group => {
+        if (group.GroupImages?.length) {
+            for (let i = 0; i < group.GroupImages.length; i++) {
+                if (group.GroupImages[i].preview === true) {
+                    group.previewImage = group.GroupImages[i].url
+                    break;
+                }
+            }
+        }
+        delete group.GroupImages
+        group.numMembers = group.Users.length
+        delete group.Users
+    })
+
+    return res.json({
+        Groups: groupsList
+    })
+})
 // VENUES
 // '--------------------------------------------------'
 
