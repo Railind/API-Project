@@ -115,7 +115,8 @@ router.put('/:groupId', requireAuth, async (req, res) => {
 );
 
 //Get all groups of current user
-router.get('/current', requireAuth, async (req, res) => {
+router.get('/current', async (req, res) => {
+    await requireAuth
     const { user } = req
     const groups = await Group.findAll({
         where: { organizerId: user.id }
