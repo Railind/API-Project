@@ -5,21 +5,46 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
-const { Group, Venue, Event, EventImage, Attendance, GroupImage } = require('../../db/models');
+const { Group, Venue, Event, EventImage, Attendance, GroupImage, User, Membership } = require('../../db/models');
 const { url } = require('inspector');
 
 const router = express.Router();
 
 
 router.delete('/:imageId', async (req, res) => {
-    try {
-        const deletedGroup = await Group.findByPk(req.params.groupId);
-        if (deletedGroup) await deletedGroup.destroy();
+    const { user } = req
+    const { imageId } = req.params
 
-        res.status(200).json({ message: 'Successfully deleted' });
-    } catch (error) {
-        console.error('Error deleting group:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+    const image = await EventImage.findByPk(imageId, {
+        include: {
+            model: Event,
+            include: { model: Group }
+        }
+    })
+
+    if (!image) {
+        return res.status(404).json({ message: "Event Image couldn't be found" })
+    }
+    let event = image.Event
+    let group = event.Group
+
+    const cohostCheck = await User.findByPk(user.id, {
+        include: {
+            model: Membership,
+            where: {
+                groupId: group.id,
+                status: 'co-host'
+            }
+        }
+    })
+
+
+    if (user.id === group.organizerId || cohostCheck !== null) {
+        await image.destroy()
+        return res.status(200).json({ message: "Successfully deleted" })
+    }
+    else {
+        res.status(403).json({ message: 'Forbidden' })
     }
 })
 

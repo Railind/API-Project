@@ -533,7 +533,7 @@ router.get('/:groupId/members', async (req, res) => {
 router.post('/:groupId/membership', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const { user } = req
-    const group = await Membership.findByPk(groupId)
+    const group = await Group.findByPk(groupId)
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
@@ -630,26 +630,39 @@ router.put('/:groupId/membership', requireAuth, async (req, res) => {
         res.status(403).json({ message: 'Forbidden' })
     }
 })
-
+// Delete a user membership ✔️
 router.delete('/:groupId/membership', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const { memberId } = req.body
+    const { user } = req
 
-    const group = await Group.findbyPk(groupId)
+    const group = await Group.findByPk(groupId)
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
 
-    const membership = await Membership.findOne({
-        where: {
-            groupId,
-            memberId,
-        }
-    });
-    if (!membership) {
-        return res.status(400).json({ "message": "User couldn't be found" })
+    const userCheck = await User.findOne({ where: { id: memberId } })
+    if (!userCheck) {
+        return res.status(400).json({ message: "Validation Error", errors: { memberId: "User couldn't be found" } })
     }
 
+    const membership = await Membership.findOne({ where: { userId: memberId } })
+    if (!membership) {
+        res.status(404).json({ message: "Membership does not exist for this User" })
+    }
+
+
+    if (user.id === group.organizerId || user.id !== memberId) {
+        await membership.destroy()
+
+        return res.json({
+            message: "Successfully deleted membership from group"
+        })
+
+    }
+    else {
+        res.status(403).json({ message: 'Forbidden' })
+    }
 })
 
 // IMAGES
@@ -683,6 +696,9 @@ router.post('/:groupId/images', requireAuth, async (req, res) => {
         return res.status(403).json({ message: "Forbidden" });
     }
 });
+
+//ATTENDEES
+
 
 
 module.exports = router;
