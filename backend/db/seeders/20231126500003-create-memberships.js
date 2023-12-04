@@ -39,7 +39,7 @@ module.exports = {
       {
         userId: 3,
         groupId: 2,
-        status: 'co-host',
+        status: 'pending',
       },
 
     ], { validate: true });
