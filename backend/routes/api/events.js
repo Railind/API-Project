@@ -5,44 +5,136 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
-const { Group, Venue, Event, EventImage, Attendance } = require('../../db/models');
+const { Group, Venue, Event, EventImage, Attendance, User, Membership } = require('../../db/models');
 const { url } = require('inspector');
 
 const router = express.Router();
 
-//Get all details of an event by id
+//Get all details of an event by id ✔️
 router.get('/:eventId', async (req, res) => {
-    let event = await Event.findByPk(req.params.eventId);
+    let { eventId } = req.params
+    let event = await Event.findByPk(req.params.eventId, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'], // Exclude createdAt and updatedAt
+        },
+        include: [{
+            model: EventImage,
+            attributes: ['id', 'url', 'preview'],
+        }, {
+            model: Group,
+            attributes: ['id', 'name', 'private', 'city', 'state'],
+        }, {
+            model: Venue,
+            attributes: ['id', 'address', 'city', 'state', 'lat', 'lng'],
+        }, {
+            model: Attendance,
+            attributes: ['eventId', 'userId']
+        }]
+        ,
+
+        where: { eventId: eventId }
+    });
+
     if (!event) {
-        return res.status(404).json({ error: 'Event not found' });
+        return res.status(404).json({ message: "Event couldn't be found" });
+    }
+    event.numAttending = event.Attendances.length
+
+    event =
+    {
+        id: event.id,
+        groupId: event.groupId,
+        venueId: event.venueId,
+        name: event.name,
+        description: event.description,
+        type: event.type,
+        capacity: event.capacity,
+        price: event.price,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        numAttending: event.numAttending,
+        Group: event.Group,
+        Venue: event.Venue,
+        EventImages: event.EventImages
     }
 
 
-    return res.json(event);
+    return res.status(200).json(event);
 });
 
 
-//Get all Events
-router.get('/', requireAuth, async (req, res) => {
+//Get all Events ✔️
+router.get('/', async (req, res) => {
     const events = await Event.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'price', 'capacity', 'description'], // Exclude createdAt and updatedAt
+        },
         include: [{
             model: EventImage,
-            where: {
-                preview: true
-            },
-            limit: 1,
-            attributes: ['url'],
+            attributes: ['url', 'preview'],
         }, {
             model: Group,
             attributes: ['id', 'name', 'city', 'state'],
         }, {
             model: Venue,
             attributes: ['id', 'city', 'state'],
+        }, {
+            model: Attendance,
+            attributes: ['eventId', 'userId']
         }]
     });
+    let eventsList = [];
+    events.forEach(event => {
+        eventsList.push(event.toJSON())
+    })
+    let count = 0;
+    eventsList.forEach(event => {
+        console.log(event.EventImages)
+        event.numAttending = event.Attendances.length
+        if (event.EventImages.length) {
+            for (let i = 0; i < event.EventImages.length; i++) {
+                count++;
+                if (event.EventImages[i].preview === true) {
+                    event.previewImage = event.EventImages[i].url;
+                }
+            }
+        }
+        delete event.EventImages
+        delete event.Attendances
+    })
 
 
-    return res.json({ "Events": events });
+
+
+    eventsList = eventsList.map((event) => {
+        const {
+            id,
+            groupId,
+            venueId,
+            name,
+            type,
+            startDate,
+            endDate,
+            numAttending,
+            previewImage,
+            ...rest
+        } = event;
+
+        return {
+            id,
+            groupId,
+            venueId,
+            name,
+            type,
+            startDate,
+            endDate,
+            numAttending,
+            previewImage,
+            ...rest,
+        };
+    });
+
+    return res.json({ Events: eventsList });
 });
 
 //Creates and returns a new event for a group specified by its id
@@ -69,63 +161,125 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
     return res.json(newVenue);
 });
 
-//Update specified event
+//Update specified event ✔️ ❌ NEEDS BODY VALIDATION
 router.put('/:eventId', requireAuth, async (req, res) => {
-    try {
-        const { user } = req
-        const { name, about, type, private, city, state } = req.body;
+    const { eventId } = req.params
+    const { user } = req
+    const { name, type, capacity, price, description, startDate, endDate, venueId } = req.body;
 
-        let updatedEvent = await Event.findByPk(req.params.groupId);
-        if (user.id !== updatedEvent.organizerId || user.id !== test) {
-            console.error({ error: 'User does not own current group.' });
-            res.status(500).json({ error: 'User does not own current group.' });
-        }
 
-        if (!updatedEvent) {
-            return res.status(404).json({ error: 'Event not found' });
-        }
-
-        updatedEvent.name = name || updatedEvent.name;
-        updatedEvent.about = about || updatedEvent.about;
-        updatedEvent.type = type || updatedEvent.type;
-        updatedEvent.private = private || updatedEvent.private;
-        updatedEvent.city = city || updatedEvent.city;
-        updatedEvent.state = state || updatedEvent.state;
-        updatedEvent.updatedAt = new Date();
-
-        await updatedEvent.save();
-        ``
-        res.status(200).json({
-            group: updatedGroup
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    const venue = await Venue.findByPk(venueId)
+    if (!venue) {
+        res.status(404)
+        return res.json({
+            message: "Venue couldn't be found"
+        })
     }
-}
-);
+
+    const event = await Event.findByPk(eventId)
+    if (!event) {
+        return res.status(404).json({ message: "Event couldn't be found" });
+    }
+    console.log(event.toJSON())
+    const eventList = event.toJSON()
+    const group = await Group.findByPk(event.groupId, {
+        include: {
+            model: Membership
+        }
+    })
+    console.log(group.toJSON())
+
+    const cohostCheck = await User.findByPk(user.id, {
+        include: {
+            model: Membership,
+            where: {
+                groupId: eventList.groupId,
+                status: 'co-host'
+            }
+        }
+    })
+    if (user.id === group.organizerId || cohostCheck !== null) {
+
+        await event.update({ name, type, capacity, price, description, startDate, endDate, venueId });
+
+        let updatedEvent = {
+            id: event.id,
+            groupId: event.groupId,
+            venueId: event.venueId,
+            name: event.name,
+            type: event.type,
+            capacity: event.capacity,
+            price: event.price,
+            description: event.description,
+            startDate: event.startDate,
+            endDate: event.endDate,
+        }
+
+        res.status(200).json(
+            updatedEvent
+        );
+
+    }
+    else {
+        return res.status(403).json({ message: "Forbidden" })
+    }
+
+});
 
 // IMAGES
 // ----------------------------------------
 
+//Add an image to an event by Id ✔️ ❌ NEEDS BODY VALIDATION
 router.post('/:eventId/images', requireAuth, async (req, res) => {
     const { eventId } = req.params
+    const { user } = req
     const event = await Event.findByPk(eventId)
     if (!event) {
         return res.status(404).json({ message: "Event couldn't be found" });
     }
 
-    const { url, preview } = req.body
+    const eventList = event.toJSON()
+    const group = await Group.findByPk(eventList.groupId, {
+        include: {
+            model: Membership
+        }
+    })
 
-    const eventImage = await EventImage.create({ id, url, preview })
+    const cohostCheck = await User.findByPk(user.id, {
+        include: {
+            model: Membership,
+            where: {
+                groupId: eventList.groupId,
+                status: 'co-host'
+            }
+        }
+    })
+    const attendeeCheck = await User.findByPk(user.id, {
+        include: {
+            model: Membership,
+            where: {
+                groupId: eventList.groupId,
+                status: 'attending'
+            }
+        }
+    })
+    if (user.id === group.organizerId || cohostCheck !== null || attendeeCheck !== null) {
 
-    const newImage = {
-        id: eventImage.id,
-        url: eventImage.url,
-        preview: eventImage.preview
+        const { url, preview } = req.body
+
+        const eventImage = await EventImage.create({ url, preview, eventId })
+
+        const newImage = {
+            id: eventImage.id,
+            url: eventImage.url,
+            preview: eventImage.preview
+        }
+
+        return res.json(newImage)
     }
-
-    return res.json(newImage)
+    else {
+        return res.status(403).json({ message: "Forbidden" })
+    }
 })
 
 

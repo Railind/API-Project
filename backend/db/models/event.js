@@ -35,17 +35,25 @@ module.exports = (sequelize, DataTypes) => {
   Event.init({
     venueId: {
       type: DataTypes.INTEGER,
-      references: { model: 'Venues' }
+      references: { model: 'Venues' },
+      onDelete: 'SET NULL'
     },
     groupId: {
       type: DataTypes.INTEGER,
-      references: { model: 'Groups' }
+      references: { model: 'Groups' },
+      allowNull: false,
+      onDelete: 'CASCADE',
+      hooks: true
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: { len: [5, 255] }
     },
-    description: DataTypes.TEXT,
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     type: DataTypes.STRING,
     capacity: DataTypes.INTEGER,
     price: DataTypes.INTEGER,

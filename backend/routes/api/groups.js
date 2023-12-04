@@ -5,7 +5,7 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
-const { Group, Membership, GroupImage, Venue, Event, User } = require('../../db/models');
+const { Group, Membership, GroupImage, Venue, Event, User, EventImage, Attendance } = require('../../db/models');
 
 const router = express.Router();
 
@@ -254,7 +254,6 @@ router.get('/:groupId/venues', requireAuth, async (req, res) => {
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
-    console.log(group.organizerId)
     const cohostCheck = await User.findByPk(user.id, {
         include: {
             model: Membership,
@@ -273,9 +272,6 @@ router.get('/:groupId/venues', requireAuth, async (req, res) => {
                 exclude: ['createdAt', 'updatedAt'], // Exclude createdAt and updatedAt
             },
         });
-        if (!group) {
-            return res.status(404).json({ message: "Group couldn't be found" });
-        }
 
         return res.json({ Venues: venues });
     }
@@ -285,7 +281,7 @@ router.get('/:groupId/venues', requireAuth, async (req, res) => {
 });
 
 
-//Make a venue for a group
+//Make a venue for a group ✔️ ❌ NEEDS BODY VALIDATION
 router.post('/:groupId/venues', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const { user } = req
@@ -328,8 +324,8 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
 // EVENTS
 // ---------------------------------------
 
-//Get Events by group Id
-router.get('/:groupId/events', requireAuth, async (req, res) => {
+//Get Events by group Id ✔️
+router.get('/:groupId/events', async (req, res) => {
     const { groupId } = req.params
     const group = await Event.findByPk(groupId)
     if (!group) {
@@ -337,37 +333,121 @@ router.get('/:groupId/events', requireAuth, async (req, res) => {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
     const events = await Event.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'price', 'capacity', 'description'], // Exclude createdAt and updatedAt
+        },
+        include: [{
+            model: EventImage,
+            attributes: ['url', 'preview'],
+        }, {
+            model: Group,
+            attributes: ['id', 'name', 'city', 'state'],
+        }, {
+            model: Venue,
+            attributes: ['id', 'city', 'state'],
+        }, {
+            model: Attendance,
+            attributes: ['eventId', 'userId']
+        }]
+        ,
+
         where: { groupId: groupId }
     });
 
-    return res.json({ Events: events });
+    let eventsList = [];
+    events.forEach(event => {
+        eventsList.push(event.toJSON())
+    })
+    let count = 0;
+    eventsList.forEach(event => {
+        console.log(event.EventImages)
+        event.numAttending = event.Attendances.length
+        if (event.EventImages.length) {
+            for (let i = 0; i < event.EventImages.length; i++) {
+                count++;
+                if (event.EventImages[i].preview === true) {
+                    event.previewImage = event.EventImages[i].url;
+                }
+            }
+        }
+        delete event.EventImages
+        delete event.Attendances
+    })
+
+
+    eventsList = eventsList.map((event) => {
+        const {
+            id,
+            groupId,
+            venueId,
+            name,
+            type,
+            startDate,
+            endDate,
+            numAttending,
+            previewImage,
+            ...rest
+        } = event;
+
+        return {
+            id,
+            groupId,
+            venueId,
+            name,
+            type,
+            startDate,
+            endDate,
+            numAttending,
+            previewImage,
+            ...rest,
+        };
+    });
+
+    return res.json({ Events: eventsList });
 });
 
-//Create Event by GroupId
+//Create Event by GroupId ✔️ ❌
 router.post('/:groupId/events', requireAuth, async (req, res) => {
     const { groupId } = req.params
+    const { user } = req
     const group = await Group.findByPk(groupId)
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
-    res.status(200)
-    const { name, type, capacity, price, description, venueId, startDate, endDate } = req.body;
-    const event = await Event.create({ groupId, name, price, description, type, capacity, venueId, startDate, endDate });
 
-    const newEvent = {
-        id: event.id,
-        groupId: groupId,
-        venueId: event.venueId,
-        name: event.name,
-        type: event.type,
-        capacity: event.capacity,
-        price: event.price,
-        description: event.description,
-        startDate: event.startDate,
-        endDate: event.endDate
-    };
+    const cohostCheck = await User.findByPk(user.id, {
+        include: {
+            model: Membership,
+            where: {
+                groupId: groupId,
+                status: 'co-host'
+            }
+        }
+    })
+    if (user.id === group.organizerId || cohostCheck !== null) {
 
-    return res.json(newEvent);
+        res.status(200)
+        const { name, type, capacity, price, description, venueId, startDate, endDate } = req.body;
+        const event = await Event.create({ groupId, name, price, description, type, capacity, venueId, startDate, endDate });
+
+        const newEvent = {
+            id: event.id,
+            groupId: groupId,
+            venueId: event.venueId,
+            name: event.name,
+            type: event.type,
+            capacity: event.capacity,
+            price: event.price,
+            description: event.description,
+            startDate: event.startDate,
+            endDate: event.endDate
+        };
+
+        return res.json(newEvent);
+    }
+    else {
+        return res.status(403).json({ message: "Forbidden" })
+    }
 });
 
 
@@ -432,31 +512,32 @@ router.delete('/:groupId/membership', requireAuth, async (req, res) => {
 
 //Add an image to a group based on group ID ✔️
 router.post('/:groupId/images', requireAuth, async (req, res) => {
-    const { groupId } = req.params
-    const { user } = req
-    const group = await Group.findByPk(groupId)
+    const { groupId } = req.params;
+    const { user } = req;
+    const group = await Group.findByPk(groupId);
+
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
+
     if (user.id === group.organizerId) {
+        res.status(200);
 
-
-        res.status(200)
         const { url, preview } = req.body;
-        const groupImage = await GroupImage.create({ url, preview });
+        // Do not include 'id' in the create call, it will be auto-generated
+        const groupImage = await GroupImage.create({ url, preview, groupId });
 
         const newImage = {
-            id: groupImage.id,
+            id: groupImage.id, // This id is automatically generated by the database
             url: groupImage.url,
             preview: groupImage.preview
         };
 
         return res.json(newImage);
+    } else {
+        return res.status(403).json({ message: "Forbidden" });
     }
-    else {
-        return res.status(403).json({ message: "Forbidden" })
-    }
-})
+});
 
 
 module.exports = router;

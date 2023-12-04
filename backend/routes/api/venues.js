@@ -9,7 +9,7 @@ const { Group, Membership, GroupImage, Venue, User } = require('../../db/models'
 
 const router = express.Router();
 
-//Edit a new venue by id
+//Edit a new venue by id ✔️ ❌
 router.put('/:venueId', requireAuth, async (req, res) => {
     const { venueId } = req.params
     const { user } = req
@@ -31,12 +31,11 @@ router.put('/:venueId', requireAuth, async (req, res) => {
     })
     if (user.id === venue.Group.organizerId || cohostCheck !== null) {
         res.status(200)
-        const { address, city, state, lat, lng } = req.body;
-        const venue = await Venue.update({ address, lat, lng, city, state });
+        const newVenue = await venue.update({ address, lat, lng, city, state });
 
-        const editedVenue = venue.toJSON()
+        const editedVenue = newVenue.toJSON()
 
-        const newVenue = {
+        const postedVenue = {
             id: editedVenue.id,
             groupId: editedVenue.groupId,
             address: editedVenue.address,
@@ -46,13 +45,14 @@ router.put('/:venueId', requireAuth, async (req, res) => {
             lng: editedVenue.lng
         };
 
-        return res.json(newVenue);
+        return res.json(postedVenue);
     }
     else {
         return res.status(403).json({ message: "Forbidden" })
     }
 
 });
+
 
 router.get('/', requireAuth, async (req, res) => {
     const venues = await Venue.findAll({
