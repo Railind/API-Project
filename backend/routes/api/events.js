@@ -10,6 +10,32 @@ const { url } = require('inspector');
 
 const router = express.Router();
 
+
+
+let validateParams = [
+    check('page')
+        .optional()
+        .custom((value) => {
+            if (value < 1) throw new Error("page must be greater than or equal to 1")
+            if (value > 10) throw new Error("page must be less than or equal to 10")
+        }),
+    check('name')
+        .optional()
+        .custom((value) => {
+            if (value === value.toString()) return true
+        }),
+    check('type')
+        .optional()
+        .custom((value) => {
+            if (value.includes('Online') || value.includes('In person')) return true
+        })
+        .withMessage("Type must be 'Online' or 'In person'"),
+    check('startDate')
+        .optional()
+        .isISO8601()
+        .withMessage("Start date must be a valid datetime"),
+    handleValidationErrors
+]
 //Get all details of an event by id ✔️
 router.get('/:eventId', async (req, res) => {
     let { eventId } = req.params
@@ -101,7 +127,7 @@ router.delete('/:eventId', requireAuth, async (req, res) => {
 
 
 //Get all Events ✔️
-router.get('/', async (req, res) => {
+router.get('/', validateParams, async (req, res) => {
     let { page, size, name, type, startDate } = req.query
 
     page = parseInt(page) || 1
