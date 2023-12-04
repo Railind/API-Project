@@ -24,17 +24,17 @@ module.exports = {
       {
         eventId: 1,
         userId: 3,
-        status: 'Event Admin',
+        status: 'attending',
       },
       {
         eventId: 2,
         userId: 2,
-        status: 'Attending',
+        status: 'attending',
       },
       {
         eventId: 2,
         userId: 1,
-        status: 'Event Admin',
+        status: 'attending',
       },
     ], { validate: true });
   },

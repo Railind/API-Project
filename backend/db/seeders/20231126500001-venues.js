@@ -25,7 +25,7 @@ module.exports = {
         groupId: 1,
         address: '',
         city: 'Toronto',
-        state: 'Ontario',
+        state: 'ON',
         lat: 40.02,
         long: 50.02,
       },
@@ -33,7 +33,7 @@ module.exports = {
         groupId: 2,
         address: '',
         city: 'Oklahoma City',
-        state: 'Oklahoma',
+        state: 'OK',
         lat: 40.32,
         long: 21.02,
       }

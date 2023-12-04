@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Event.hasMany(
         models.EventImage,
-        { foreignKey: 'eventId', hooks: true, onDelte: 'CASCADE' }
+        { foreignKey: 'eventId', hooks: true, onDelete: 'CASCADE' }
       );
       Event.hasMany(
         models.Attendance,
@@ -54,11 +54,37 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    type: DataTypes.STRING,
-    capacity: DataTypes.INTEGER,
-    price: DataTypes.INTEGER,
-    startDate: DataTypes.DATE,
-    endDate: DataTypes.DATE,
+    type: {
+      type: DataTypes.STRING,
+      validate: {
+        typeChecker(value) {
+          const types = ['In person', 'Online']
+          if (!types.includes(value)) {
+            throw new Error("Type must be Online or In person")
+          }
+        }
+      }
+    },
+    capacity: { type: DataTypes.INTEGER },
+    price: { type: DataTypes.DECIMAL(10, 2) },
+    startDate: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: true,
+        isAfter: new Date().toJSON().slice(0, 10)
+      }
+    },
+    endDate: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: true,
+        beforeCheck(value) {
+          if (value < this.startDate) {
+            throw new Error('End date is less than start date')
+          }
+        }
+      }
+    },
   }, {
     sequelize,
     modelName: 'Event',

@@ -9,6 +9,11 @@ const { Group, Membership, GroupImage, Venue, User } = require('../../db/models'
 
 const router = express.Router();
 
+
+
+
+
+
 //Edit a new venue by id ✔️ ❌
 router.put('/:venueId', requireAuth, async (req, res) => {
     const { venueId } = req.params

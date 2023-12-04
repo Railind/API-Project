@@ -288,7 +288,7 @@ router.put('/:eventId', requireAuth, async (req, res) => {
 // IMAGES
 // ----------------------------------------
 
-//Add an image to an event by Id ✔️ ❌ NEEDS BODY VALIDATION
+//Add an image to an event by Id ✔️
 router.post('/:eventId/images', requireAuth, async (req, res) => {
     const { eventId } = req.params
     const { user } = req

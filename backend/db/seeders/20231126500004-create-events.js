@@ -25,22 +25,22 @@ module.exports = {
         groupId: 1,
         name: 'Coffee and Cars',
         description: 'Crazy cool and fun event for all car enthusiasts! Come by and have a wonderful time.',
-        type: "Free",
+        type: "Online",
         capacity: 40,
         price: 5.00,
-        startDate: '01-02-2024',
-        endDate: '01-04-2024'
+        startDate: '2024-02-04',
+        endDate: '2024-03-27'
       },
       {
         venueId: 2,
         groupId: 2,
         name: 'Art Station',
         description: 'Artists! Come by and join in our group work!.',
-        type: "Free",
+        type: "In person",
         capacity: 70,
         price: 1.00,
-        startDate: '04-03-2024',
-        endDate: '04-21-2024'
+        startDate: '2024-03-04',
+        endDate: '2024-04-04'
       },
     ], { validate: true });
   },

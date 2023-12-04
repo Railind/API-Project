@@ -29,12 +29,12 @@ module.exports = {
       {
         userId: 2,
         groupId: 2,
-        status: 'organizer',
+        status: 'co-host',
       },
       {
         userId: 2,
         groupId: 2,
-        status: 'co-host',
+        status: 'pending',
       },
       {
         userId: 3,

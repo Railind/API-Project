@@ -34,10 +34,32 @@ module.exports = (sequelize, DataTypes) => {
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [2, 2],
+        isAlpha: true
+      }
     },
-    lat: DataTypes.DECIMAL,
-    lng: DataTypes.DECIMAL,
+    lat: {
+      type: DataTypes.FLOAT,
+      validate: {
+        numCheck(value) {
+          if (Math.abs(value > 90 || value < -90)) {
+            throw new Error("Latitute is not valid")
+          }
+        }
+      }
+    },
+    lng: {
+      type: DataTypes.FLOAT,
+      validate: {
+        numCheck(value) {
+          if (Math.abs(value > 180 || value < -180)) {
+            throw new Error("Latitute is not valid")
+          }
+        }
+      }
+    },
   }, {
     sequelize,
     modelName: 'Venue',

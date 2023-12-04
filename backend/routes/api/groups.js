@@ -37,19 +37,6 @@ const validateGroups = [
     handleValidationErrors
 ];
 
-const cohostFinder = async (user, groupId) => {
-    await User.findByPk(user.id, {
-        include: {
-            model: Membership,
-            where: {
-                groupId: groupId,
-                status: 'co-host'
-            }
-        }
-    })
-}
-
-
 //Create group ✔️
 router.post('/', requireAuth, validateGroups, async (req, res) => {
     const { user } = req

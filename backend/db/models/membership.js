@@ -31,13 +31,21 @@ module.exports = (sequelize, DataTypes) => {
     groupId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: 'Users' },
+      references: { model: 'Groups' },
       onDelete: 'CASCADE'
 
     },
     status: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        typeCheck(value) {
+          let valid = ['co-host', 'member', 'pending']
+          if (!valid.includes(value)) {
+            throw new Error("Status must be co-host, member, or pending")
+          }
+        }
+      }
     }
   }, {
     sequelize,
