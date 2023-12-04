@@ -14,34 +14,32 @@ const router = express.Router();
 const validateGroups = [
     check('name')
         .exists({ checkFalsy: true })
-        .isLength({ max: 4 })
+        .isLength({ max: 60 })
         .withMessage('Name must be 60 characters or less'),
     check('about')
         .exists({ checkFalsy: true })
         .isLength({ min: 50 })
         .withMessage('About must be 50 characters or more'),
     check('type')
-        .not()
-        .isEmail()
-        .withMessage('Username cannot be an email.'),
-    check('private')
         .exists({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Password must be 6 characters or more.'),
+        .isIn(['Online', 'In Person'])
+        .withMessage("Type must be 'Online' or 'In person"),
+    check('private')
+        .exists()
+        .isBoolean()
+        .withMessage("Private must be a boolean"),
     check('city')
         .exists({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Password must be 6 characters or more.'),
+        .withMessage('City is required'),
     check('state')
         .exists({ checkFalsy: true })
-        .isLength({ min: 6 })
-        .withMessage('Password must be 6 characters or more.'),
+        .withMessage('State is required'),
     handleValidationErrors
 ];
 
 
 
-
+//Create group ✔️
 router.post('/', requireAuth, validateGroups, async (req, res) => {
     const { user } = req
     let organizerId = user.id
@@ -50,12 +48,15 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
 
     const newGroup = {
         id: group.id,
+        organizerId: group.organizerId,
         name: group.name,
         about: group.about,
         type: group.type,
         private: group.private,
         city: group.city,
-        state: group.state
+        state: group.state,
+        createdAt: group.createdAt,
+        updatedAt: group.updatedAt
     };
     res.status(201)
     return res.json({
@@ -114,7 +115,7 @@ router.put('/:groupId', requireAuth, async (req, res) => {
 }
 );
 
-//Get all groups of current user
+//Get all groups of current user ✔️
 router.get('/current', async (req, res) => {
     await requireAuth
     const { user } = req
@@ -128,39 +129,80 @@ router.get('/current', async (req, res) => {
         },
         {
             model: GroupImage,
-            attributes: ['url'],
+            attributes: ['url', 'preview'],
             where: { preview: true },
             required: false,
-            separate: true,
             limit: 1,
         }]
     });
-    return res.json([...groups, ...groupMemberships]);
+
+    let groupsList = [];
+    groupMemberships.forEach(group => {
+        groupsList.push(group.toJSON())
+    })
+    let count = 0;
+    groupsList.forEach(group => {
+        group.numMembers = group.Memberships.length
+        if (group.GroupImages.length) {
+            for (let i = 0; i < group.GroupImages.length; i++) {
+                count++
+                if (group.GroupImages[i].preview === true) {
+                    group.previewImage = group.GroupImages[i].url
+                }
+            }
+        }
+        delete group.GroupImages
+        delete group.Memberships
+    })
+
+    return res.json({
+        Groups: groupsList
+    })
 });
 
-//Get group by Id
+//Get group by Id ✔️
 router.get('/:groupId', async (req, res) => {
     const { groupId } = req.params
-    const group = await Group.findByPk(groupId,
+    const group = await Group.findByPk(groupId, {
+        include: [
+            {
+                model: GroupImage,
+                attributes: ['id',
+                    'url', 'preview']
+            },
+            {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName'],
+                as: 'Organizer'
+            },
+            {
+                model: Venue,
+                attributes: ['id', 'groupId', 'address', 'city', 'state', 'lat', 'lng'],
+                // as: 'Organizer'
+            }
+        ]
+    }
 
     );
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
 
-    return res.json(group);
+    return res.status(200).json(group);
 });
-//Get all groups
+
+//Get all groups ✔️
 router.get('/', async (req, res) => {
     const groups = await Group.findAll(
         {
             include: [
                 {
                     model: GroupImage,
-                    attributes: ['url', 'preview']
+                    attributes: ['url', 'preview'],
                 },
                 {
-                    model: User
+                    model: Membership,
+                    attributes: ['groupId', 'userId']
                 }
             ]
         })
@@ -169,25 +211,28 @@ router.get('/', async (req, res) => {
     groups.forEach(group => {
         groupsList.push(group.toJSON())
     })
-
+    let count = 0;
     groupsList.forEach(group => {
-        if (group.GroupImages?.length) {
+        group.numMembers = group.Memberships.length
+        if (group.GroupImages.length) {
             for (let i = 0; i < group.GroupImages.length; i++) {
+                count++
                 if (group.GroupImages[i].preview === true) {
                     group.previewImage = group.GroupImages[i].url
-                    break;
                 }
             }
         }
         delete group.GroupImages
-        group.numMembers = group.Users.length
-        delete group.Users
+        delete group.Memberships
     })
 
     return res.json({
         Groups: groupsList
     })
 })
+
+
+
 // VENUES
 // '--------------------------------------------------'
 

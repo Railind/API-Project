@@ -35,8 +35,10 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
 
     },
-    status: DataTypes.STRING,
-    allowNull: false
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Membership',

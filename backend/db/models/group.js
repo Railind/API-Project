@@ -29,12 +29,18 @@ module.exports = (sequelize, DataTypes) => {
       );
       Group.belongsTo(
         models.User,
-        { foreignKey: 'organizerId' }
+        { as: 'Organizer', foreignKey: 'organizerId' }
       );
     }
   }
   Group.init({
-    organizerId: DataTypes.INTEGER,
+    organizerId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Users'
+      },
+      allowNull: false
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
