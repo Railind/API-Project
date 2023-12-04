@@ -21,25 +21,25 @@ module.exports = {
      * }], {});
     */
     await Membership.bulkCreate([
-      // {
-      //   userId: 1,
-      //   groupId: 1,
-      //   status: 'Admin',
-      // },
       {
         userId: 1,
         groupId: 2,
-        status: 'Admin',
+        status: 'co-host',
       },
       {
         userId: 2,
         groupId: 2,
-        status: 'Member',
+        status: 'organizer',
+      },
+      {
+        userId: 2,
+        groupId: 2,
+        status: 'co-host',
       },
       {
         userId: 3,
         groupId: 2,
-        status: 'Member',
+        status: 'co-host',
       },
 
     ], { validate: true });
