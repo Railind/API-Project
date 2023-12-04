@@ -44,6 +44,12 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
     const { name, about, type, private, city, state } = req.body;
     const group = await Group.create({ organizerId, name, about, type, private, city, state });
 
+    await Membership.create({
+        userId: user.id,
+        groupId: group.id,
+        status: 'co-host'
+    });
+
     const newGroup = {
         id: group.id,
         organizerId: group.organizerId,

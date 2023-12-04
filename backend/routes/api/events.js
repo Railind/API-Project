@@ -249,7 +249,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
     return res.json(newVenue);
 });
 
-//Update specified event ✔️ ❌ NEEDS BODY VALIDATION
+//Update specified event ✔️
 router.put('/:eventId', requireAuth, async (req, res) => {
     const { eventId } = req.params
     const { user } = req
@@ -502,7 +502,7 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
     }
 })
 
-// change status of attendances for an event by ID ✔️ ❌ NEEDS BODY VALIDATION
+// change status of attendances for an event by ID ✔️
 router.put('/:eventId/attendance', requireAuth, async (req, res) => {
     const { eventId } = req.params;
     const { userId, status } = req.body;

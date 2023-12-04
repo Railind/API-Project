@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         numCheck(value) {
           if (Math.abs(value > 90 || value < -90)) {
-            throw new Error("Latitute is not valid")
+            throw new Error("Latitude is not valid")
           }
         }
       }
@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         numCheck(value) {
           if (Math.abs(value > 180 || value < -180)) {
-            throw new Error("Latitute is not valid")
+            throw new Error("Longitude is not valid")
           }
         }
       }

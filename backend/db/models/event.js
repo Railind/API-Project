@@ -66,7 +66,18 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     capacity: { type: DataTypes.INTEGER },
-    price: { type: DataTypes.DECIMAL(10, 2) },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+
+      validate: {
+        isPositive(value) {
+          if (value < 0) {
+            throw new Error('Price is invalid');
+          }
+        }
+
+      }
+    },
     startDate: {
       type: DataTypes.DATE,
       validate: {
