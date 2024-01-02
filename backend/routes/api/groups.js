@@ -63,9 +63,9 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
         updatedAt: group.updatedAt
     };
     res.status(201)
-    return res.json({
-        group: newGroup
-    });
+    return res.json(
+        newGroup
+    );
 }
 );
 
@@ -178,6 +178,10 @@ router.get('/:groupId', async (req, res) => {
     const group = await Group.findByPk(groupId, {
         include: [
             {
+                model: Membership,
+                attributes: ['groupId', 'userId']
+            },
+            {
                 model: GroupImage,
                 attributes: ['id',
                     'url', 'preview']
@@ -191,11 +195,11 @@ router.get('/:groupId', async (req, res) => {
                 model: Venue,
                 attributes: ['id', 'groupId', 'address', 'city', 'state', 'lat', 'lng'],
                 // as: 'Organizer'
-            }
-        ]
+            },
+        ],
     }
-
     );
+    group.numMembers = group.Memberships.length
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
