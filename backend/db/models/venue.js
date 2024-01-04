@@ -30,7 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        allowNull: false
+      }
     },
     state: {
       type: DataTypes.STRING,

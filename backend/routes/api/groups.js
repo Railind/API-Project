@@ -140,7 +140,7 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
 );
 
 //Delete Current Group ✔️
-router.delete('/:groupId', requireAuth, async (req, res) => {
+router.delete('/:groupId', requireAuth, validateGroups, async (req, res) => {
     const { user } = req
     const deletedGroup = await Group.findByPk(req.params.groupId);
     if (!deletedGroup) {
