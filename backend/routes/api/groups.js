@@ -11,6 +11,58 @@ const router = express.Router();
 
 
 
+let validateParams = [
+    check('page')
+        .optional()
+        .custom((value) => {
+            if (value < 1) {
+                console.log(typeof value, 'THIS IS TOO SMALL')
+                throw new Error("Page must be greater than or equal to 1")
+            }
+            if (value > 10) {
+                console.log(typeof value, 'THIS IS TOO BIG')
+                throw new Error("Page must be less than or equal to 10")
+            }
+            console.log(typeof value, 'this is our page value type')
+            return value
+        }),
+    check('size')
+        .optional()
+        .custom((value) => {
+            if (value < 1) throw new Error("Size must be greater than or equal to 1")
+            console.log(value, 'this is our size value')
+            return value
+        }),
+    check('name')
+        .optional()
+        .custom((value) => {
+            if (value === value.toString()) return true
+        }),
+    check('type')
+        .optional()
+        .custom((value) => {
+            if (value.includes('Online') || value.includes('In person')) return true
+        })
+        .withMessage("Type must be 'Online' or 'In person'"),
+    check('state')
+        .optional()
+        .custom((value) => {
+            if (value === value.toString()) return true
+        }),
+    check('city')
+        .optional()
+        .custom((value) => {
+            if (value === value.toString()) return true
+        }),
+    check('private')
+        .optional()
+        .custom((value) => {
+            if (value === value.toString()) return true
+        }),
+    handleValidationErrors,
+]
+
+
 const validateGroups = [
     check('name')
         .exists({ checkFalsy: true })
@@ -264,7 +316,35 @@ router.get('/:groupId', async (req, res) => {
 });
 
 //Get all groups ✔️
-router.get('/', async (req, res) => {
+router.get('/', validateParams, async (req, res) => {
+    let { page, size, name, type, city, state } = req.query
+
+    page = parseInt(page) || 1
+    size = parseInt(size) || 20
+
+    if (name) name = name.replace(/"/g, "")
+    if (type) type = type.replace(/"/g, "")
+    if (city) city = city.replace(/"/g, "")
+    if (state) city = state.replace(/"/g, "")
+
+
+    let filters = {
+        where: {
+            name: {
+                [Op.substring]: name
+            },
+            type,
+            city,
+            state
+        },
+        limit: size,
+        offset: size * (page - 1)
+    }
+    if (!city) delete filters.where.city
+    if (!state) delete filters.where.state
+    if (!name) delete filters.where.name
+    if (!type) delete filters.where.type
+
     const groups = await Group.findAll(
         {
             include: [
@@ -276,7 +356,7 @@ router.get('/', async (req, res) => {
                     model: Membership,
                     attributes: ['groupId', 'userId']
                 }
-            ]
+            ], ...filters
         })
 
     let groupsList = [];

@@ -25,12 +25,14 @@ let validateParams = [
                 throw new Error("Page must be less than or equal to 10")
             }
             console.log(typeof value, 'this is our page value type')
+            return value
         }),
     check('size')
         .optional()
         .custom((value) => {
             if (value < 1) throw new Error("Size must be greater than or equal to 1")
             console.log(value, 'this is our size value')
+            return value
         }),
     check('name')
         .optional()
@@ -149,8 +151,8 @@ router.get('/', validateParams, async (req, res) => {
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
 
-    console.log(page, 'This is our page in the endpoint')
-    console.log(size, 'This is our size in the endpoint')
+    // console.log(page, 'This is our page in the endpoint')
+    // console.log(size, 'This is our size in the endpoint')
 
     let filters = {
         where: {
