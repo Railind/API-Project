@@ -16,8 +16,21 @@ let validateParams = [
     check('page')
         .optional()
         .custom((value) => {
-            if (value < 1) throw new Error("page must be greater than or equal to 1")
-            if (value > 10) throw new Error("page must be less than or equal to 10")
+            if (value < 1) {
+                console.log(typeof value, 'THIS IS TOO SMALL')
+                throw new Error("Page must be greater than or equal to 1")
+            }
+            if (value > 10) {
+                console.log(typeof value, 'THIS IS TOO BIG')
+                throw new Error("Page must be less than or equal to 10")
+            }
+            console.log(typeof value, 'this is our page value type')
+        }),
+    check('size')
+        .optional()
+        .custom((value) => {
+            if (value < 1) throw new Error("Size must be greater than or equal to 1")
+            console.log(value, 'this is our size value')
         }),
     check('name')
         .optional()
@@ -34,7 +47,7 @@ let validateParams = [
         .optional()
         .isISO8601()
         .withMessage("Start date must be a valid datetime"),
-    handleValidationErrors
+    handleValidationErrors,
 ]
 //Get all details of an event by id ✔️
 router.get('/:eventId', async (req, res) => {
@@ -136,6 +149,8 @@ router.get('/', validateParams, async (req, res) => {
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
 
+    console.log(page, 'This is our page in the endpoint')
+    console.log(size, 'This is our size in the endpoint')
 
     let filters = {
         where: {
@@ -153,7 +168,7 @@ router.get('/', validateParams, async (req, res) => {
     if (!startDate) delete filters.where.startDate
     const events = await Event.findAll({
         attributes: {
-            exclude: ['createdAt', 'updatedAt', 'price', 'capacity', 'description'], // Exclude createdAt and updatedAt
+            exclude: ['createdAt', 'updatedAt', 'price', 'capacity', 'description'],
         },
         include: [{
             model: EventImage,
@@ -177,7 +192,7 @@ router.get('/', validateParams, async (req, res) => {
     eventsList.forEach(event => {
 
         event.numAttending = event.Attendances.length
-        event.previewImage = "No preiview Image given"
+        event.previewImage = "No preview Image given"
 
         if (event.EventImages.length) {
             for (let i = 0; i < event.EventImages.length; i++) {
@@ -341,9 +356,9 @@ router.post('/:eventId/images', requireAuth, async (req, res) => {
     })
     const attendeeCheck = await User.findByPk(user.id, {
         include: {
-            model: Membership,
+            model: Attendance,
             where: {
-                groupId: eventList.groupId,
+                eventId: eventId,
                 status: 'attending'
             }
         }
@@ -463,15 +478,23 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
         return res.status(404).json({ message: "Event couldn't be found" });
     }
 
-    const membershipStatus = await User.findByPk(user.id, {
-        include: {
-            model: Membership,
-            where: {
-                groupId: event.groupId,
-                id: user.id
-            }
+    // const membershipStatus = await User.findByPk(user.id, {
+    //     include: {
+    //         model: Membership,
+    //         where: {
+    //             groupId: event.groupId,
+    //             id: user.id
+    //         }
+    //     }
+    // });
+
+    const membershipStatus = await Membership.findOne({
+        where: {
+            groupId: event.groupId,
+            userId: user.id
         }
     });
+
 
     if (membershipStatus !== null) {
         const attendanceStatus = await Attendance.findOne({
@@ -479,12 +502,12 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
         });
 
         if (!attendanceStatus) {
-            const newMember = await Attendance.create({
+            const newAttendance = await Attendance.create({
                 eventId: eventId,
                 userId: user.id,
                 status: 'pending'
             })
-            let currMember = newMember.toJSON()
+            let currMember = newAttendance.toJSON()
             return res.json({
                 userId: currMember.userId,
                 status: currMember.status
@@ -592,7 +615,7 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res) => {
         return res.status(404).json({ message: "User couldn't be found" });
     }
 
-    if (user.id === group.organizerId || user.id !== memberId) {
+    if (user.id === group.organizerId || user.id === userId) {
         await userAttendance.destroy()
 
         return res.json({

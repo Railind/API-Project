@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     venueId: {
       type: DataTypes.INTEGER,
       references: { model: 'Venues' },
+      allowNull: false,
       onDelete: 'SET NULL'
     },
     groupId: {

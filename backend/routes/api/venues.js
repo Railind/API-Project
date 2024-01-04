@@ -10,7 +10,17 @@ const { Group, Membership, GroupImage, Venue, User } = require('../../db/models'
 const router = express.Router();
 
 
-
+const validateVenues = [
+    check('address')
+        .exists({ checkFalsy: true })
+        .withMessage('Street address is required'),
+    check('city')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required'),
+    check('state')
+        .exists({ checkFalsy: true })
+        .withMessage('State is required'),
+]
 
 
 
@@ -59,7 +69,7 @@ router.put('/:venueId', requireAuth, async (req, res) => {
 });
 
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', requireAuth, validateVenues, async (req, res) => {
     const venues = await Venue.findAll({
 
         include: {
@@ -76,3 +86,4 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+``
