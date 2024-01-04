@@ -17,21 +17,17 @@ let validateParams = [
         .optional()
         .custom((value) => {
             if (value < 1) {
-                console.log(typeof value, 'THIS IS TOO SMALL')
                 throw new Error("Page must be greater than or equal to 1")
             }
             if (value > 10) {
-                console.log(typeof value, 'THIS IS TOO BIG')
                 throw new Error("Page must be less than or equal to 10")
             }
-            console.log(typeof value, 'this is our page value type')
             return value
         }),
     check('size')
         .optional()
         .custom((value) => {
             if (value < 1) throw new Error("Size must be greater than or equal to 1")
-            console.log(value, 'this is our size value')
             return value
         }),
     check('name')
