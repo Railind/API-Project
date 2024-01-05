@@ -23,7 +23,7 @@ module.exports = {
     await Venue.bulkCreate([
       {
         groupId: 1,
-        address: '',
+        address: '121 William Way',
         city: 'Toronto',
         state: 'ON',
         lat: 40.02,
@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         groupId: 2,
-        address: '',
+        address: '124 New Edmond Rd',
         city: 'Oklahoma City',
         state: 'OK',
         lat: 40.32,
