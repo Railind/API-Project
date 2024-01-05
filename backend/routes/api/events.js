@@ -499,11 +499,15 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
         const attendanceStatus = await Attendance.findOne({
             where: { eventId: eventId, userId: user.id }
         });
-
-        if (attendanceStatus.toJSON().status === 'pending') {
-            return res.status(400).json({ message: 'Attendance has alread been requested' })
+        if (attendanceStatus) {
+            if (attendanceStatus.toJSON().status === 'pending') {
+                return res.status(400).json({ message: 'Attendance has alread been requested' })
+            }
+            else if (attendanceStatus.toJSON().status !== 'pending') {
+                res.status(400).json({ message: 'User is already an attendee of the event' })
+            }
         }
-        if (!attendanceStatus) {
+        else if (!attendanceStatus) {
             const newAttendance = await Attendance.create({
                 eventId: eventId,
                 userId: user.id,
@@ -514,9 +518,6 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
                 userId: currMember.userId,
                 status: currMember.status
             })
-        }
-        else if (attendanceStatus.toJSON().status !== 'pending') {
-            res.status(400).json({ message: 'User is already an attendee of the event' })
         }
     }
     else {
