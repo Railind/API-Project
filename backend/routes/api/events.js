@@ -503,11 +503,11 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
             if (attendanceStatus.toJSON().status === 'pending') {
                 return res.status(400).json({ message: 'Attendance has alread been requested' })
             }
-            else if (attendanceStatus.toJSON().status !== 'pending') {
-                res.status(400).json({ message: 'User is already an attendee of the event' })
+            if (attendanceStatus.toJSON().status !== 'pending') {
+                return res.status(400).json({ message: 'User is already an attendee of the event' })
             }
         }
-        else if (!attendanceStatus) {
+        else {
             const newAttendance = await Attendance.create({
                 eventId: eventId,
                 userId: user.id,
