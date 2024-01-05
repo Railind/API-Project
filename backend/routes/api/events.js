@@ -17,21 +17,17 @@ let validateParams = [
         .optional()
         .custom((value) => {
             if (value < 1) {
-                console.log(typeof value, 'THIS IS TOO SMALL')
                 throw new Error("Page must be greater than or equal to 1")
             }
             if (value > 10) {
-                console.log(typeof value, 'THIS IS TOO BIG')
                 throw new Error("Page must be less than or equal to 10")
             }
-            console.log(typeof value, 'this is our page value type')
             return value
         }),
     check('size')
         .optional()
         .custom((value) => {
             if (value < 1) throw new Error("Size must be greater than or equal to 1")
-            console.log(value, 'this is our size value')
             return value
         }),
     check('name')
@@ -150,6 +146,7 @@ router.get('/', validateParams, async (req, res) => {
 
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
+    if (startDate) startDate = startDate.replace(/"/g, "")
 
     // console.log(page, 'This is our page in the endpoint')
     // console.log(size, 'This is our size in the endpoint')
@@ -621,7 +618,7 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res) => {
         await userAttendance.destroy()
 
         return res.json({
-            message: "Successfully deleted membership from group"
+            message: "Successfully deleted attendance from group"
         })
 
     }

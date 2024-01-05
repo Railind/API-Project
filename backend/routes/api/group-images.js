@@ -35,7 +35,6 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
         }
     })
 
-
     if (user.id === group.organizerId || cohostCheck !== null) {
         await image.destroy()
         return res.status(200).json({ message: "Successfully deleted" })

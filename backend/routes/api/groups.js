@@ -93,6 +93,19 @@ const validateEvents = [
     check('venueId')
         .exists({ checkFalsy: true })
         .withMessage("Type must be 'Online' or 'In person"),
+    check('venueId')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 50 })
+        .withMessage('About must be 50 characters or more'),
+    check('venueId').exists({ checkFalsy: true })
+        .isLength({ min: 50 })
+        .withMessage('About must be 50 characters or more'),
+    check('venueId').exists({ checkFalsy: true })
+        .isLength({ min: 50 })
+        .withMessage('About must be 50 characters or more'),
+    check('venueId').exists({ checkFalsy: true })
+        .isLength({ min: 50 })
+        .withMessage('About must be 50 characters or more'),
 ]
 
 const validateVenues = [
@@ -140,7 +153,7 @@ router.post('/', requireAuth, validateGroups, async (req, res) => {
 );
 
 //Delete Current Group ✔️
-router.delete('/:groupId', requireAuth, validateGroups, async (req, res) => {
+router.delete('/:groupId', requireAuth, async (req, res) => {
     const { user } = req
     const deletedGroup = await Group.findByPk(req.params.groupId);
     if (!deletedGroup) {
@@ -158,7 +171,7 @@ router.delete('/:groupId', requireAuth, validateGroups, async (req, res) => {
 
 
 //Update Current Group ✔️router.put
-router.put('/:groupId', requireAuth, async (req, res) => {
+router.put('/:groupId', requireAuth, validateGroups, async (req, res) => {
 
     const { user } = req
     const { name, about, type, private, city, state } = req.body;
@@ -325,7 +338,7 @@ router.get('/', validateParams, async (req, res) => {
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
     if (city) city = city.replace(/"/g, "")
-    if (state) city = state.replace(/"/g, "")
+    if (state) state = state.replace(/"/g, "")
 
 
     let filters = {
@@ -468,7 +481,7 @@ router.post('/:groupId/venues', requireAuth, validateVenues, async (req, res) =>
 // ---------------------------------------
 
 //Get Events by group Id ✔️
-router.get('/:groupId/events', validateEvents, async (req, res) => {
+router.get('/:groupId/events', async (req, res) => {
     const { groupId } = req.params
     const group = await Group.findByPk(groupId)
     if (!group) {
@@ -553,10 +566,13 @@ router.get('/:groupId/events', validateEvents, async (req, res) => {
 router.post('/:groupId/events', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const { user } = req
+    const { venueId } = req.body
+
     const group = await Group.findByPk(groupId)
     if (!group) {
         return res.status(404).json({ message: "Group couldn't be found" });
     }
+    const venueCheck = await Venue.findByPk(venueId)
 
     const cohostCheck = await User.findByPk(user.id, {
         include: {
@@ -569,8 +585,12 @@ router.post('/:groupId/events', requireAuth, async (req, res) => {
     })
     if (user.id === group.organizerId || cohostCheck !== null) {
 
+        if (!venueCheck) {
+            return res.status(404).json({ message: "Venue couldn't be found" });
+        }
+
         res.status(200)
-        const { name, type, capacity, price, description, venueId, startDate, endDate } = req.body;
+        const { name, type, capacity, price, description, startDate, endDate } = req.body;
         const event = await Event.create({ groupId, name, price, description, type, capacity, venueId, startDate, endDate });
 
         const newEvent = {
