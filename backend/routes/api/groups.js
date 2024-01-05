@@ -108,7 +108,6 @@ const validateEvents = [
         .withMessage("Capacity must be an integer"),
     check('price')
         .exists({ checkFalsy: true })
-        .isDecimal({ decimal_digits: '2' })
         .custom((value) => {
             if (value < 0) {
                 throw new Error('Price is invalid');
@@ -116,12 +115,12 @@ const validateEvents = [
         }),
     check('startDate')
         .exists({ checkFalsy: true })
-        .isDate()
+        .isISO8601()
         .isAfter(new Date().toJSON().slice(0, 10),)
         .withMessage('Start date must be in the future'),
     check('endDate')
         .exists({ checkFalsy: true })
-        .isDate()
+        .isISO8601()
         .custom((value, { req }) => {
             if (new Date(value) < new Date(req.body.startDate)) {
                 throw new Error('End date is less than the start date')
