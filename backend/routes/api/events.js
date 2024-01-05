@@ -190,8 +190,6 @@ router.get('/', validateParams, async (req, res) => {
     if (type) type = type.replace(/"/g, "")
     if (startDate) startDate = startDate.replace(/"/g, "")
 
-    // console.log(page, 'This is our page in the endpoint')
-    // console.log(size, 'This is our size in the endpoint')
 
     let filters = {
         where: {
@@ -199,7 +197,7 @@ router.get('/', validateParams, async (req, res) => {
                 [Op.substring]: name
             },
             type,
-            startDate: { [Op.substring]: startDate }
+            startDate: { [Op.gte]: startDate }
         },
         limit: size,
         offset: size * (page - 1)
