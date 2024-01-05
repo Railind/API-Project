@@ -90,34 +90,79 @@ const validateGroups = [
 ];
 
 const validateEvents = [
-    check('venueId')
+    check('name')
         .exists({ checkFalsy: true })
+        .isLength({ min: 5, max: 255 })
+        .withMessage('Name must be at least 5 characters'),
+    check('description')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 5 })
+        .withMessage('About must be 50 characters or more'),
+    check('type')
+        .exists({ checkFalsy: true })
+        .isIn(['Online', 'In person'])
         .withMessage("Type must be 'Online' or 'In person"),
-    check('venueId')
+    check('capacity')
+        .exists()
+        .isInt()
+        .withMessage("Capacity must be an integer"),
+    check('price')
         .exists({ checkFalsy: true })
-        .isLength({ min: 50 })
-        .withMessage('About must be 50 characters or more'),
-    check('venueId').exists({ checkFalsy: true })
-        .isLength({ min: 50 })
-        .withMessage('About must be 50 characters or more'),
-    check('venueId').exists({ checkFalsy: true })
-        .isLength({ min: 50 })
-        .withMessage('About must be 50 characters or more'),
-    check('venueId').exists({ checkFalsy: true })
-        .isLength({ min: 50 })
-        .withMessage('About must be 50 characters or more'),
-]
+        .isDecimal({ decimal_digits: '2' })
+        .custom((value) => {
+            if (value < 0) {
+                throw new Error('Price is invalid');
+            }
+        }),
+    check('startDate')
+        .exists({ checkFalsy: true })
+        .isDate()
+        .isAfter(new Date().toJSON().slice(0, 10),)
+        .withMessage('Start date must be in the future'),
+    check('endDate')
+        .exists({ checkFalsy: true })
+        .isDate()
+        .custom((value, { req }) => {
+            if (new Date(value) < new Date(req.body.startDate)) {
+                throw new Error('End date is less than the start date')
+            }
+        }),
+    handleValidationErrors
+];
+
 
 const validateVenues = [
     check('address')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('Street address is required'),
     check('city')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('City is required'),
     check('state')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('State is required'),
+    check('lat')
+        .exists({ checkFalsy: true })
+        .isFloat()
+        .custom((value) => {
+            if (Math.abs(value > 90 || value < -90)) {
+                throw new Error("Latitude must be within -90 and 90")
+            }
+            return true
+        }),
+    check('lng')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required')
+        .custom((value) => {
+            if (Math.abs(value > 180 || value < -180)) {
+                throw new Error("Longitude must be within -180 and 180")
+            }
+            return true
+        })
+    , handleValidationErrors
 ]
 
 //Create group ✔️
@@ -563,7 +608,7 @@ router.get('/:groupId/events', async (req, res) => {
 });
 
 //Create Event by GroupId ✔️ ❌
-router.post('/:groupId/events', requireAuth, async (req, res) => {
+router.post('/:groupId/events', requireAuth, validateEvents, async (req, res) => {
     const { groupId } = req.params
     const { user } = req
     const { venueId } = req.body
@@ -790,9 +835,8 @@ router.put('/:groupId/membership', requireAuth, async (req, res) => {
     }
 })
 // Delete a user membership ✔️
-router.delete('/:groupId/membership', requireAuth, async (req, res) => {
-    const { groupId } = req.params
-    const { memberId } = req.body
+router.delete('/:groupId/membership/:memberId', requireAuth, async (req, res) => {
+    const { groupId, memberId } = req.params
     const { user } = req
 
     const group = await Group.findByPk(groupId)
@@ -811,7 +855,7 @@ router.delete('/:groupId/membership', requireAuth, async (req, res) => {
     }
 
 
-    if (user.id === group.organizerId || user.id === memberId) {
+    if (user.id === group.organizerId || user.id === parseInt(memberId)) {
         await membership.destroy()
 
         return res.json({

@@ -13,19 +13,40 @@ const router = express.Router();
 const validateVenues = [
     check('address')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('Street address is required'),
     check('city')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('City is required'),
     check('state')
         .exists({ checkFalsy: true })
+        .notEmpty()
         .withMessage('State is required'),
+    check('lat')
+        .exists({ checkFalsy: true })
+        .isFloat()
+        .custom((value) => {
+            if (Math.abs(value > 90 || value < -90)) {
+                throw new Error("Latitude must be within -90 and 90")
+            }
+            return true
+        }),
+    check('lng')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required')
+        .custom((value) => {
+            if (Math.abs(value > 180 || value < -180)) {
+                throw new Error("Longitude must be within -180 and 180")
+            }
+            return true
+        })
+    , handleValidationErrors
 ]
 
 
-
 //Edit a new venue by id ✔️ ❌
-router.put('/:venueId', requireAuth, async (req, res) => {
+router.put('/:venueId', requireAuth, validateVenues, async (req, res) => {
     const { venueId } = req.params
     const { user } = req
     const { address, city, state, lat, lng } = req.body

@@ -47,6 +47,48 @@ let validateParams = [
         .withMessage("Start date must be a valid datetime"),
     handleValidationErrors,
 ]
+
+
+const validateEvents = [
+    check('name')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 5, max: 255 })
+        .withMessage('Name must be at least 5 characters'),
+    check('description')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 5 })
+        .withMessage('About must be 50 characters or more'),
+    check('type')
+        .exists({ checkFalsy: true })
+        .isIn(['Online', 'In person'])
+        .withMessage("Type must be 'Online' or 'In person"),
+    check('capacity')
+        .exists()
+        .isInt()
+        .withMessage("Capacity must be an integer"),
+    check('price')
+        .exists({ checkFalsy: true })
+        .isDecimal({ decimal_digits: '2' })
+        .custom((value) => {
+            if (value < 0) {
+                throw new Error('Price is invalid');
+            }
+        }),
+    check('startDate')
+        .exists({ checkFalsy: true })
+        .isDate()
+        .isAfter(new Date().toJSON().slice(0, 10),)
+        .withMessage('Start date must be in the future'),
+    check('endDate')
+        .exists({ checkFalsy: true })
+        .isDate()
+        .custom((value, { req }) => {
+            if (new Date(value) < new Date(req.body.startDate)) {
+                throw new Error('End date is less than the start date')
+            }
+        }),
+    handleValidationErrors
+];
 //Get all details of an event by id ✔️
 router.get('/:eventId', async (req, res) => {
     let { eventId } = req.params
@@ -239,7 +281,7 @@ router.get('/', validateParams, async (req, res) => {
     return res.json({ Events: eventsList });
 });
 
-//Creates and returns a new event for a group specified by its id
+//Creates and returns a new venue for a group specified by its id
 router.post('/:groupId/venues', requireAuth, async (req, res) => {
     const { groupId } = req.params
     const group = await Group.findByPk(groupId)
@@ -264,7 +306,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res) => {
 });
 
 //Update specified event ✔️
-router.put('/:eventId', requireAuth, async (req, res) => {
+router.put('/:eventId', requireAuth, validateEvents, async (req, res) => {
     const { eventId } = req.params
     const { user } = req
     const { name, type, capacity, price, description, startDate, endDate, venueId } = req.body;
@@ -589,11 +631,13 @@ router.put('/:eventId/attendance', requireAuth, async (req, res) => {
 
 
 //Delete attendance for an event specified by id ✔️
-router.delete('/:eventId/attendance', requireAuth, async (req, res) => {
-    const { eventId } = req.params
-    const { userId } = req.body
+router.delete('/:eventId/attendance/:userId', requireAuth, async (req, res) => {
+    const { eventId, userId } = req.params
     const { user } = req
 
+
+    console.log('users ID', user.id)
+    console.log('Param ID', userId)
     const event = await Event.findByPk(eventId)
     if (!event) {
         return res.status(404).json({ message: "Event couldn't be found" });
@@ -609,16 +653,28 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res) => {
         }
     });
 
+    console.log('Attendance', userAttendance)
+    if (userAttendance) {
+        console.log('IT EXISTS')
+    }
     if (!userAttendance) {
         return res.status(404).json({ message: "Attendance between the user and the event does not exist" });
     }
 
     const userCheck = await User.findByPk(userId);
+
+    console.log('Userchecker', userCheck)
     if (!userCheck) {
         return res.status(404).json({ message: "User couldn't be found" });
     }
+    console.log('RIGHT BEFORE IT HITS')
 
-    if (user.id === group.organizerId || user.id === userId) {
+
+    console.log(typeof user.id)
+    console.log(typeof userId)
+    if (user.id === parseInt(userId)) console.log('Comparison is correct')
+    if (user.id === group.organizerId || user.id === parseInt(userId)) {
+        console.log('ARE WE HITTING??')
         await userAttendance.destroy()
 
         return res.json({
