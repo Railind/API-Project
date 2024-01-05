@@ -146,6 +146,7 @@ router.get('/', validateParams, async (req, res) => {
 
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
+    if (startDate) startDate = startDate.replace(/"/g, "")
 
     // console.log(page, 'This is our page in the endpoint')
     // console.log(size, 'This is our size in the endpoint')
@@ -617,7 +618,7 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res) => {
         await userAttendance.destroy()
 
         return res.json({
-            message: "Successfully deleted membership from group"
+            message: "Successfully deleted attendance from group"
         })
 
     }

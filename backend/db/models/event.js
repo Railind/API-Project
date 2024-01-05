@@ -36,7 +36,6 @@ module.exports = (sequelize, DataTypes) => {
     venueId: {
       type: DataTypes.INTEGER,
       references: { model: 'Venues' },
-      allowNull: false,
       onDelete: 'SET NULL'
     },
     groupId: {
@@ -49,11 +48,19 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: { len: [5, 255] }
+      validate: {
+        len: {
+          args: [5, 255],
+          msg: 'Name must be at least 5 characters'
+        }
+      }
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: 'Description is required' }
+      }
     },
     type: {
       type: DataTypes.STRING,
@@ -66,7 +73,13 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    capacity: { type: DataTypes.INTEGER },
+    capacity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: { msg: 'Capacity must be an integer' }
+      }
+    },
     price: {
       type: DataTypes.DECIMAL(10, 2),
 
@@ -82,8 +95,11 @@ module.exports = (sequelize, DataTypes) => {
     startDate: {
       type: DataTypes.DATE,
       validate: {
-        isDate: true,
-        isAfter: new Date().toJSON().slice(0, 10)
+        isDate: { msg: 'Must be a valid date.' },
+        isAfter: {
+          args: new Date().toJSON().slice(0, 10),
+          msg: 'Start date must be in the future'
+        }
       }
     },
     endDate: {
