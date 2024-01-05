@@ -74,7 +74,7 @@ const validateGroups = [
         .withMessage('About must be 50 characters or more'),
     check('type')
         .exists({ checkFalsy: true })
-        .isIn(['Online', 'In Person'])
+        .isIn(['Online', 'In person'])
         .withMessage("Type must be 'Online' or 'In person"),
     check('private')
         .exists()

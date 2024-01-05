@@ -476,53 +476,54 @@ router.post('/:eventId/attendance', requireAuth, async (req, res) => {
     if (!event) {
         return res.status(404).json({ message: "Event couldn't be found" });
     }
+    const group = await Group.findByPk(event.groupId)
 
-    // const membershipStatus = await User.findByPk(user.id, {
-    //     include: {
-    //         model: Membership,
-    //         where: {
-    //             groupId: event.groupId,
-    //             id: user.id
-    //         }
-    //     }
-    // });
+    const currentUser = await User.findByPk(user.id, {
+        include: [{
+            model: Membership
+        },
+        {
+            model: Attendance
+        }]
+    })
 
-    const membershipStatus = await Membership.findOne({
-        where: {
-            groupId: event.groupId,
-            userId: user.id
+    const currentUserJSON = currentUser.toJSON()
+    let membershipArr = []
+    let attendanceArr = []
+    currentUserJSON.Memberships.forEach(membership => {
+        if (membership.groupId === group.id) {
+            membershipArr.push(membership.status)
         }
-    });
+    })
 
-
-    if (membershipStatus !== null) {
-        const attendanceStatus = await Attendance.findOne({
-            where: { eventId: eventId, userId: user.id }
-        });
-        if (attendanceStatus) {
-            if (attendanceStatus.toJSON().status === 'pending') {
-                return res.status(400).json({ message: 'Attendance has alread been requested' })
-            }
-            if (attendanceStatus.toJSON().status !== 'pending') {
-                return res.status(400).json({ message: 'User is already an attendee of the event' })
-            }
-        }
-        else {
-            const newAttendance = await Attendance.create({
-                eventId: eventId,
-                userId: user.id,
-                status: 'pending'
-            })
-            let currMember = newAttendance.toJSON()
-            return res.json({
-                userId: currMember.userId,
-                status: currMember.status
-            })
-        }
-    }
-    else {
+    if (!membershipArr.length || membershipArr.includes('pending')) {
         return res.status(403).json({ message: "Forbidden" })
     }
+
+    currentUserJSON.Attendances.forEach(event => {
+        if (event.eventId == eventId) {
+            attendanceArr.push(event.status)
+        }
+    })
+
+    if (attendanceArr.includes('pending')) {
+        return res.status(400).json({ message: 'Attendance has already been requested' })
+    }
+
+    if (attendanceArr.includes('attending')) {
+        return res.status(400).json({ message: 'User is already an attendee of the event' })
+    }
+
+    const newAttendance = await Attendance.create({
+        eventId: eventId,
+        userId: user.id,
+        status: 'pending'
+    })
+    let currMember = newAttendance.toJSON()
+    return res.json({
+        userId: currMember.userId,
+        status: currMember.status
+    })
 })
 
 // change status of attendances for an event by ID ✔️
@@ -530,6 +531,11 @@ router.put('/:eventId/attendance', requireAuth, async (req, res) => {
     const { eventId } = req.params;
     const { userId, status } = req.body;
     const { user } = req;
+
+    const userCheck = await User.findByPk(userId);
+    if (!userCheck) {
+        return res.status(404).json({ message: "User couldn't be found" });
+    }
 
     if (status === 'pending') {
         return res.status(400).json({ message: "Cannot change an attendance status to pending" });
@@ -553,10 +559,7 @@ router.put('/:eventId/attendance', requireAuth, async (req, res) => {
         return res.status(404).json({ message: "Attendance between the user and the event does not exist" });
     }
 
-    const userCheck = await User.findByPk(userId);
-    if (!userCheck) {
-        return res.status(404).json({ message: "User couldn't be found" });
-    }
+
 
     const cohostCheck = await User.findByPk(user.id, {
         include: {
