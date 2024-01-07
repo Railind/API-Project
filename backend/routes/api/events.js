@@ -43,7 +43,11 @@ let validateParams = [
         .withMessage("Type must be 'Online' or 'In person'"),
     check('startDate')
         .optional()
-        .isISO8601()
+        .isISO8601({
+            options: {
+                format: 'YYYY/MM/DD h:m'
+            }
+        })
         .withMessage("Start date must be a valid datetime"),
     handleValidationErrors,
 ]
@@ -187,7 +191,7 @@ router.get('/', validateParams, async (req, res) => {
 
     if (name) name = name.replace(/"/g, "")
     if (type) type = type.replace(/"/g, "")
-    if (startDate) startDate = startDate.replace(/"/g, "")
+    // if (startDate) startDate = startDate.replace(/"/g, "")
 
 
     let filters = {
@@ -196,14 +200,22 @@ router.get('/', validateParams, async (req, res) => {
                 [Op.substring]: name
             },
             type,
-            startDate: { [Op.gte]: startDate }
+            // startDate: { [Op.substring]: startDate }
         },
         limit: size,
         offset: size * (page - 1)
     }
+
+    // let newDate = startDate.split(' ')
+    // console.log('THESE ARE OUR FILTERS', filters)
+    // console.log('UNFILTERED', startDate)
+    // console.log('FILTERED', newDate)
+
+
     if (!name) delete filters.where.name
     if (!type) delete filters.where.type
-    if (!startDate) delete filters.where.startDate
+    // if (!startDate) delete filters.where.startDate
+
     const events = await Event.findAll({
         attributes: {
             exclude: ['createdAt', 'updatedAt', 'price', 'capacity', 'description'],
@@ -227,7 +239,43 @@ router.get('/', validateParams, async (req, res) => {
         eventsList.push(event.toJSON())
     })
     let count = 0;
-    eventsList.forEach(event => {
+
+    //Testing Date-Time filter
+
+    let filteredEventsList = []
+
+    if (startDate) {
+        eventsList.forEach(event => {
+
+            // console.log('START DATE IN LIST', event.startDate)
+            // console.log(typeof event.startDate)
+
+            const startDateToString = event.startDate instanceof Date ? event.startDate.toISOString().split('T')[0] : event.startDate;
+
+            // console.log('NEW', startDateToString)
+            // console.log(typeof startDateToString)
+
+            // console.log('StartDate of event', startDateToString)
+            // console.log('Filtered Start Date', startDate)
+
+            if (typeof startDateToString === 'string') {
+                // console.log('Test one')
+                if (startDateToString.split(' ').length == 1) {
+                    // console.log('Test two')
+                    if (startDateToString.split(':')[0] == startDate) {
+                        // console.log('Test three')
+                        filteredEventsList.push(event)
+                    }
+                }
+            }
+        })
+
+        console.log(filteredEventsList)
+    }
+
+    else { filteredEventsList = eventsList }
+
+    filteredEventsList.forEach(event => {
 
         event.numAttending = event.Attendances.length
         event.previewImage = "No preview Image given"
@@ -245,9 +293,7 @@ router.get('/', validateParams, async (req, res) => {
     })
 
 
-
-
-    eventsList = eventsList.map((event) => {
+    filteredEventsList = filteredEventsList.map((event) => {
         const {
             id,
             groupId,
@@ -275,7 +321,58 @@ router.get('/', validateParams, async (req, res) => {
         };
     });
 
-    return res.json({ Events: eventsList });
+    return res.json({ Events: filteredEventsList });
+    //--
+
+
+    //Original for each - keep
+
+    // eventsList.forEach(event => {
+
+    //     event.numAttending = event.Attendances.length
+    //     event.previewImage = "No preview Image given"
+
+    //     if (event.EventImages.length) {
+    //         for (let i = 0; i < event.EventImages.length; i++) {
+    //             count++;
+    //             if (event.EventImages[i].preview === true) {
+    //                 event.previewImage = event.EventImages[i].url;
+    //             }
+    //         }
+    //     }
+    //     delete event.EventImages
+    //     delete event.Attendances
+    // })
+
+    // eventsList = eventsList.map((event) => {
+    //     const {
+    //         id,
+    //         groupId,
+    //         venueId,
+    //         name,
+    //         type,
+    //         startDate,
+    //         endDate,
+    //         numAttending,
+    //         previewImage,
+    //         ...rest
+    //     } = event;
+
+    //     return {
+    //         id,
+    //         groupId,
+    //         venueId,
+    //         name,
+    //         type,
+    //         startDate,
+    //         endDate,
+    //         numAttending,
+    //         previewImage,
+    //         ...rest,
+    //     };
+    // });
+
+    // return res.json({ Events: eventsList });
 });
 
 //Creates and returns a new venue for a group specified by its id

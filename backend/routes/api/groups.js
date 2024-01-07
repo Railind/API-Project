@@ -113,6 +113,15 @@ const validateEvents = [
             if (isNaN(value) || value < 0) {
                 throw new Error('Price is invalid');
             }
+            let numString = value.toString()
+            if (numString.includes('.')) {
+                let splitVal = numString.split('.')
+                if (splitVal[1].length > 2) {
+                    {
+                        throw new Error('Price is invalid');
+                    }
+                }
+            }
             return true
         }),
     check('startDate')
