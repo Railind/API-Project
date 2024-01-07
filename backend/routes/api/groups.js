@@ -94,10 +94,6 @@ const validateEvents = [
         .exists({ checkFalsy: true })
         .isLength({ min: 5, max: 255 })
         .withMessage('Name must be at least 5 characters'),
-    check('description')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 5 })
-        .withMessage('About must be 50 characters or more'),
     check('type')
         .exists({ checkFalsy: true })
         .isIn(['Online', 'In person'])
@@ -124,6 +120,10 @@ const validateEvents = [
             }
             return true
         }),
+    check('description')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 5 })
+        .withMessage('Description is required'),
     check('startDate')
         .exists({ checkFalsy: true })
         .isISO8601()

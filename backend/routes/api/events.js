@@ -76,10 +76,21 @@ const validateEvents = [
         .withMessage("Capacity must be an integer"),
     check('price')
         .exists({ checkFalsy: true })
+        .isNumeric()
         .custom((value) => {
-            if (value < 0) {
+            if (isNaN(value) || value < 0) {
                 throw new Error('Price is invalid');
             }
+            let numString = value.toString()
+            if (numString.includes('.')) {
+                let splitVal = numString.split('.')
+                if (splitVal[1].length > 2) {
+                    {
+                        throw new Error('Price is invalid');
+                    }
+                }
+            }
+            return true
         }),
     check('startDate')
         .exists({ checkFalsy: true })
@@ -90,9 +101,13 @@ const validateEvents = [
         .exists({ checkFalsy: true })
         .isISO8601()
         .custom((value, { req }) => {
-            if (new Date(value) < new Date(req.body.startDate)) {
-                throw new Error('End date is less than the start date')
+            const endDate = new Date(value)
+            const startDate = new Date(req.body.startDate)
+
+            if (endDate <= startDate) {
+                throw new Error('End date must be later than the start date')
             }
+            return true
         }),
     handleValidationErrors
 ];
