@@ -33,8 +33,12 @@ let validateParams = [
     check('name')
         .optional()
         .custom((value) => {
-            if (value === value.toString()) return true
-        }),
+            // V we want this only if we care if the string is technically empty?
+            // if (value.length < 1) return false
+            if (typeof value !== 'string') throw new Error('Name must be a string')
+            if (typeof value === 'string') return true
+        })
+        .withMessage('Name must be a string'),
     check('type')
         .optional()
         .custom((value) => {
@@ -270,7 +274,7 @@ router.get('/', validateParams, async (req, res) => {
             }
         })
 
-        console.log(filteredEventsList)
+        // console.log(filteredEventsList)
     }
 
     else { filteredEventsList = eventsList }
