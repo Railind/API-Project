@@ -792,7 +792,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res) => {
     }
     const userCheck = await User.findOne({ where: { id: memberId } })
     if (!userCheck) {
-        return res.status(400).json({ message: "Validation Error", errors: { memberId: "User couldn't be found" } })
+        return res.status(404).json({ message: "Validation Error", errors: { memberId: "User couldn't be found" } })
     }
     const group = await Group.findByPk(groupId)
     if (!group) {
@@ -860,7 +860,7 @@ router.delete('/:groupId/membership/:memberId', requireAuth, async (req, res) =>
 
     const userCheck = await User.findOne({ where: { id: memberId } })
     if (!userCheck) {
-        return res.status(400).json({ message: "Validation Error", errors: { memberId: "User couldn't be found" } })
+        return res.status(404).json({ message: "User couldn't be found" })
     }
 
     const membership = await Membership.findOne({ where: { userId: memberId } })

@@ -62,10 +62,6 @@ const validateEvents = [
         .exists({ checkFalsy: true })
         .isLength({ min: 5, max: 255 })
         .withMessage('Name must be at least 5 characters'),
-    check('description')
-        .exists({ checkFalsy: true })
-        .isLength({ min: 5 })
-        .withMessage('About must be 50 characters or more'),
     check('type')
         .exists({ checkFalsy: true })
         .isIn(['Online', 'In person'])
@@ -92,6 +88,10 @@ const validateEvents = [
             }
             return true
         }),
+    check('description')
+        .exists({ checkFalsy: true })
+        .isLength({ min: 5 })
+        .withMessage('Description is required'),
     check('startDate')
         .exists({ checkFalsy: true })
         .isISO8601()
@@ -770,16 +770,16 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async (req, res) => {
     if (userAttendance) {
         console.log('IT EXISTS')
     }
-    if (!userAttendance) {
-        return res.status(404).json({ message: "Attendance between the user and the event does not exist" });
-    }
 
     const userCheck = await User.findByPk(userId);
-
-    console.log('Userchecker', userCheck)
     if (!userCheck) {
         return res.status(404).json({ message: "User couldn't be found" });
     }
+    if (!userAttendance) {
+        return res.status(404).json({ message: "Attendance does not exist for this User" });
+    }
+
+    console.log('Userchecker', userCheck)
     console.log('RIGHT BEFORE IT HITS')
 
 
@@ -791,7 +791,7 @@ router.delete('/:eventId/attendance/:userId', requireAuth, async (req, res) => {
         await userAttendance.destroy()
 
         return res.json({
-            message: "Successfully deleted attendance from group"
+            message: "Successfully deleted attendance from event"
         })
 
     }
