@@ -788,11 +788,11 @@ router.put('/:groupId/membership', requireAuth, async (req, res) => {
     const { memberId, status } = req.body
     const { user } = req
     if (status === 'pending') {
-        return res.status(400).json({ message: "Validations Error", errors: { status: 'Cannot change a membership status to pending' } })
+        return res.status(400).json({ message: "Validation Error", errors: { status: 'Cannot change a membership status to pending' } })
     }
     const userCheck = await User.findOne({ where: { id: memberId } })
     if (!userCheck) {
-        return res.status(404).json({ message: "Validation Error", errors: { memberId: "User couldn't be found" } })
+        return res.status(404).json({ message: "User couldn't be found" })
     }
     const group = await Group.findByPk(groupId)
     if (!group) {
