@@ -693,7 +693,7 @@ router.put('/:eventId/attendance', requireAuth, async (req, res) => {
     }
 
     if (status === 'pending') {
-        return res.status(400).json({ message: "Cannot change an attendance status to pending" });
+        return res.status(400).json({ message: "Validation Error", errors: { status: 'Cannot change an attendance status to pending' } });
     }
 
     const event = await Event.findByPk(eventId);
