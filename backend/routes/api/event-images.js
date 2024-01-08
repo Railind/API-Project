@@ -10,6 +10,8 @@ const { url } = require('inspector');
 
 const router = express.Router();
 
+// It's all finished now!
+
 
 router.delete('/:imageId', requireAuth, async (req, res) => {
     const { user } = req
