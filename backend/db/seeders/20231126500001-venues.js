@@ -36,6 +36,14 @@ module.exports = {
         state: 'OK',
         lat: 40.32,
         long: 21.02,
+      },
+      {
+        groupId: 3,
+        address: '132 Main Street',
+        city: 'Toronto',
+        state: 'ON',
+        lat: 40.15,
+        long: 50.94,
       }
 
     ], { validate: true });

@@ -42,6 +42,17 @@ module.exports = {
         startDate: '2024-03-04',
         endDate: '2024-04-04'
       },
+      {
+        venueId: 3,
+        groupId: 3,
+        name: 'Photo show and tell',
+        description: 'Come and enjoy great company while talking about our various photos.',
+        type: "In person",
+        capacity: 100,
+        price: 5.00,
+        startDate: '2024-03-04',
+        endDate: '2024-04-04'
+      },
     ], { validate: true });
   },
 

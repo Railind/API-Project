@@ -40,6 +40,15 @@ module.exports = {
         city: 'Toronto',
         state: 'Ontario'
       },
+      {
+        organizerId: 3,
+        name: 'Photographers for fun',
+        about: 'This is a fun group for photography enthusiasts!',
+        type: 'Public',
+        private: true,
+        city: 'Toronto',
+        state: 'Ontario'
+      },
 
     ], { validate: true });
   },
