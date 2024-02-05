@@ -28,8 +28,8 @@ module.exports = {
         type: "Online",
         capacity: 40,
         price: 5.00,
-        startDate: '2024-02-04',
-        endDate: '2024-03-27'
+        startDate: '2024-04-04',
+        endDate: '2024-4-27'
       },
       {
         venueId: 2,
@@ -39,19 +39,8 @@ module.exports = {
         type: "In person",
         capacity: 70,
         price: 1.00,
-        startDate: '2024-03-04',
-        endDate: '2024-04-04'
-      },
-      {
-        venueId: 3,
-        groupId: 3,
-        name: 'Photo show and tell',
-        description: 'Come and enjoy great company while talking about our various photos.',
-        type: "In person",
-        capacity: 100,
-        price: 5.00,
-        startDate: '2024-03-04',
-        endDate: '2024-04-04'
+        startDate: '2024-04-04',
+        endDate: '2024-05-04'
       },
     ], { validate: true });
   },

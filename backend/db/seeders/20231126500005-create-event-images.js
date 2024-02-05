@@ -29,11 +29,6 @@ module.exports = {
         eventId: 1,
         url: 'www.coolpicture/212',
         preview: true
-      },
-      {
-        eventId: 3,
-        url: 'www.coolpicture/2123',
-        preview: true
       }
     ], { validate: true });
   },

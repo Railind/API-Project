@@ -30,11 +30,6 @@ module.exports = {
         groupId: 2,
         url: 'www.coolpicture/2a22',
         preview: true
-      },
-      {
-        groupId: 3,
-        url: 'www.coolpicture/2123',
-        preview: true
       }
     ], { validate: true });
   },
