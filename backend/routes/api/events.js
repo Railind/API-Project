@@ -606,7 +606,7 @@ router.get('/:eventId/attendees', async (req, res) => {
             id: member.User.id,
             firstName: member.User.firstName,
             lastName: member.User.lastName,
-            Membership: {
+            Attendance: {
                 status: member.status
             }
         }))
