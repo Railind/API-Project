@@ -1,8 +1,9 @@
 // frontend/src/components/SignupFormPage/SignupFormPage.jsx
 import { useModal } from '../../context/Modal';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+// import { UseSelector } from 'react-redux';
+// import { Navigate } from 'react-router-dom';
 import * as sessionActions from '../../store/session';
 import './SignupForm.css';
 
