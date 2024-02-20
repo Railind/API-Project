@@ -16,3 +16,19 @@ export const thunkingGroup = () => async (dispatch) => {
     const groups = await response.json()
     dispatch(loadGroups(groups))
 }
+
+
+const groupReducer = (state = {}, action) => {
+    switch (action.type) {
+        case LOAD_GROUPS: {
+            const groupState = { ...state }
+            action.groups.Groups.forEach(group => {
+                groupState[group.id] = { ...state[group.id], ...group }
+            })
+            return groupState
+        }
+        default:
+            return state;
+
+    }
+}

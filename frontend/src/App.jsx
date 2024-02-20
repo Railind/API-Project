@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 // import SignupFormModal from './components/signup/SignupFormModal';
 import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
+import { thunkingGroup } from './store/groups';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ function Layout() {
   useEffect(() => {
     dispatch(sessionActions.restoreUser()).then(() => {
       setIsLoaded(true)
+      dispatch(thunkingGroup())
     });
   }, [dispatch]);
 
@@ -31,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <h1>Welcome!</h1>
+      },
+      {
+        path: 'groups',
+        element: <GroupsList />
       }
     ]
   }
