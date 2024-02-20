@@ -34,10 +34,10 @@ const router = createBrowserRouter([
         path: '/',
         element: <h1>Welcome!</h1>
       },
-      {
-        path: 'groups',
-        element: <GroupsList />
-      }
+      // {
+      //   path: 'groups',
+      //   element: <GroupsList />
+      // }
     ]
   }
 ]);

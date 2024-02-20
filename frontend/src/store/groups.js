@@ -1,4 +1,4 @@
-import { csrfFetch } from './csrf';
+// import { csrfFetch } from './csrf';
 
 
 export const LOAD_GROUPS = 'groups/LOAD_GROUPS'
@@ -18,17 +18,17 @@ export const thunkingGroup = () => async (dispatch) => {
 }
 
 
-const groupReducer = (state = {}, action) => {
-    switch (action.type) {
-        case LOAD_GROUPS: {
-            const groupState = { ...state }
-            action.groups.Groups.forEach(group => {
-                groupState[group.id] = { ...state[group.id], ...group }
-            })
-            return groupState
-        }
-        default:
-            return state;
+// const groupReducer = (state = {}, action) => {
+//     switch (action.type) {
+//         case LOAD_GROUPS: {
+//             const groupState = { ...state }
+//             action.groups.Groups.forEach(group => {
+//                 groupState[group.id] = { ...state[group.id], ...group }
+//             })
+//             return groupState
+//         }
+//         default:
+//             return state;
 
-    }
-}
+//     }
+// }
