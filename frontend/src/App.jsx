@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
+import ListGroups from './components/Groups/ListGroups/ListGroups';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -34,10 +35,10 @@ const router = createBrowserRouter([
         path: '/',
         element: <h1>Welcome!</h1>
       },
-      // {
-      //   path: 'groups',
-      //   element: <GroupsList />
-      // }
+      {
+        path: 'groups',
+        element: <ListGroups />
+      }
     ]
   }
 ]);
