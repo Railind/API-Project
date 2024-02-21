@@ -15,22 +15,23 @@ export const thunkingGroup = () => async (dispatch) => {
     const response = await fetch('/api/groups')
     const groups = await response.json()
     dispatch(loadGroups(groups))
-    console.log('Testinggggg')
+    console.log('Testing')
 }
 
 
 const groupReducer = (state = {}, action) => {
     switch (action.type) {
         case LOAD_GROUPS: {
-            const newState = { ...state }; // Create a shallow copy of the state
-            action.groups.forEach(group => {
-                newState[group.id] = { ...state[group.id], ...group }; // Update the copy with new group information
+            const groupState = { ...state };
+            // Ensure we're accessing the 'Groups' array within 'action.groups'
+            action.groups.Groups.forEach(group => {
+                groupState[group.id] = { ...group };
             });
-            return newState; // Return the updated copy
+            return groupState;
         }
         default:
             return state;
     }
-}
+};
 
 export default groupReducer

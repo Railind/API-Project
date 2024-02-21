@@ -1,35 +1,19 @@
-import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import ListGroupInfo from '../ListGroupInfo/ListGroupInfo';
+// import { useSelector } from 'react-redux';
 
-function ListGroups() {
-    const groupsObj = useSelector(state => state.groups)
-    const groups = Object.values(groupsObj)
+// function ListGroups() {
+//     const groupsObj = useSelector(state => state.groups)
+//     const groups = Object.values(groupsObj)
 
-    return (
-        <div className='group-list-page'>
-            <section>
-                <div className='page-links'>
-                    <NavLink className='' to='/events'>Events</NavLink>
-                    <NavLink className='' to='/groups'>Groups</NavLink>
-                </div>
-                <div>
-                    <span>Groups in Meetup</span>
-                </div>
-            </section>
-            <section>
-                <ul className='group-list'>
-                    {groups.map(group => (
-                        <ListGroupInfo
-                            groupId={group.id}
-                            key={group.id}
-                        />
-                    ))}
-                </ul>
-            </section>
+//     return (
+//         <>
+//             <h2>All Groups</h2>
+//             <ul className="group-list">
+//                 {groupArr.map((groups) => (
+//                     <ProduceDetails key={groups.id} groups={groups} />
+//                 ))}
+//             </ul>
+//         </>
+//     );
+// }
 
-        </div>
-    );
-}
-
-export default ListGroups;
+// export default ListGroups;
