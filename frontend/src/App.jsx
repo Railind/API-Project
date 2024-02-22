@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 // import LoginFormPage from './components/LoginFormPage';
 // import SignupFormModal from './components/signup/SignupFormModal';
+import HomePage from './components/HomePage/HomePage';
 import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
@@ -33,10 +34,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <h1>Welcome!</h1>
+        element: <HomePage />
       },
+
       {
-        path: 'groups',
+        path: '/groups',
         element: <ListGroups />
       }
     ]
