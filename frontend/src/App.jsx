@@ -8,6 +8,7 @@ import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
 import ListGroups from './components/Groups/ListGroups/ListGroups';
+import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -36,10 +37,14 @@ const router = createBrowserRouter([
         path: '/',
         element: <HomePage />
       },
-
       {
         path: '/groups',
         element: <ListGroups />
+      }
+      ,
+      {
+        path: '/groups/new',
+        element: <GroupCreationForm />
       }
     ]
   }

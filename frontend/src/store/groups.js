@@ -1,10 +1,14 @@
 // import { csrfFetch } from './csrf';
 
+import { csrfFetch } from "./csrf"
+
 
 export const LOAD_GROUPS = 'groups/LOAD_GROUPS'
 export const LOAD_GROUP_INFORMATION = 'groups/LOAD_GROUP_INFORMATION'
 export const EDIT_GROUP = 'groups/EDIT_GROUP'
 export const DELETE_GROUP = 'group/DELETE_GROUP'
+export const CREATE_GROUP = 'group/CREATE_GROUP'
+
 
 export const loadGroups = (groups) => ({
     type: LOAD_GROUPS,
@@ -27,6 +31,11 @@ export const deleteGroup = (groupId) => ({
     groupId,
 })
 
+export const createGroup = (group) => ({
+    tpye: CREATE_GROUP,
+    group
+})
+
 
 
 export const thunkingGroup = () => async (dispatch) => {
@@ -36,6 +45,21 @@ export const thunkingGroup = () => async (dispatch) => {
     console.log('Testing')
 }
 
+export const thunkGroupCreator = (group) => async (dispatch) => {
+    const response = await csrfFetch('/api/groups',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(group)
+        })
+    if (response.ok) {
+        const group = await response.json()
+        dispatch(createGroup(group))
+        return group
+    } else throw response
+}
 
 const groupReducer = (state = {}, action) => {
     switch (action.type) {
@@ -57,6 +81,11 @@ const groupReducer = (state = {}, action) => {
         case DELETE_GROUP: {
             const groupState = { ...state };
             delete groupState[action.groupId]
+            return groupState
+        }
+        case CREATE_GROUP: {
+            const groupState = { ...state };
+            groupState[action.group.id] = action.group
             return groupState
         }
         default:

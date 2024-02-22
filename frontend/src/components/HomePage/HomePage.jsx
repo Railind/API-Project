@@ -16,6 +16,10 @@ export default function HomePage() {
         navigate('/groups')
     }
 
+    const createGroup = () => {
+        navigate('/groups/new')
+    }
+
 
     return (
         < div className="homePage" >
@@ -26,7 +30,14 @@ export default function HomePage() {
                 <div className="group-finder" onClick={allGroups}>
                     <p>Click to see all groups</p>
                 </div>
+            </div >
 
+
+            <h1>Create a new Group</h1>
+            <div className="Group Maker">
+                <div className="group-creator" onClick={createGroup}>
+                    <p>Click to see all groups</p>
+                </div>
             </div >
         </div >
     );
