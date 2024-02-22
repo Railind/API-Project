@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 
 function ListGroups() {
@@ -15,19 +15,15 @@ function ListGroups() {
     // const ownerCheck = (group) => {
     //     return group.ownerId === currentUser.id
     // }
-
     return (
         <>
             <h2>All Groups</h2>
             <ul className="group-list">
                 {groups.map((group) => (
                     <li key={group.id}>
-                        <p>{group.name}</p>
-                        <div>
-                            <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
-                                Update
-                            </button>
-                        </div>
+                        <Link to={`/groups/${group.id}`}>
+                            <p>{group.name}</p>
+                        </Link>
                     </li>
                 ))}
             </ul>

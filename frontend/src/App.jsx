@@ -8,9 +8,9 @@ import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
 import ListGroups from './components/Groups/ListGroups/ListGroups';
+import ListGroupInfo from './components/Groups/ListGroupInfo/ListGroupInfo';
 import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
 import EditGroup from './components/Groups/EditGroup/EditGroup';
-
 function Layout() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -48,8 +48,8 @@ const router = createBrowserRouter([
         element: <GroupCreationForm />
       },
       {
-        path: ':groupId',
-        element: <Outlet />,
+        path: 'groups/:groupId',
+        element: <ListGroupInfo />,
         children: [
           {
             path: 'edit',

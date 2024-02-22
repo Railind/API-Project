@@ -78,7 +78,7 @@ export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
         dispatch(editGroup(groupId, group))
         return group
     }
-    else return error = await response.json()
+    // else return error = await response.json()
 }
 
 
@@ -98,7 +98,7 @@ export const thunkGroupDeleter = (group) => async (dispatch) => {
         dispatch(deleteGroup(group.id))
         return message
     }
-    else return error = await response.json()
+    // else return error = await response.json()
 
 }
 
