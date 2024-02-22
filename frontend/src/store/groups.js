@@ -61,6 +61,50 @@ export const thunkGroupCreator = (group) => async (dispatch) => {
     } else throw response
 }
 
+
+
+export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
+    const response = await csrfFetch(`/api/groups/${groupId}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(group)
+        }
+    )
+    if (response.ok) {
+        const group = await response.json()
+        dispatch(editGroup(groupId, group))
+        return group
+    }
+    else return error = await response.json()
+}
+
+
+
+export const thunkGroupDeleter = (group) => async (dispatch) => {
+    const response = await csrfFetch(`/api/groups/${group.id}`,
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    )
+    if (response.ok) {
+        const message = await response.json()
+        //We'll delete events later
+        dispatch(deleteGroup(group.id))
+        return message
+    }
+    else return error = await response.json()
+
+}
+
+
+
+
 const groupReducer = (state = {}, action) => {
     switch (action.type) {
         case LOAD_GROUPS: {

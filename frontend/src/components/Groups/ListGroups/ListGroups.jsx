@@ -1,17 +1,34 @@
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 
 function ListGroups() {
+    const navigate = useNavigate()
     const groupsObj = useSelector(state => state.groups)
-    console.log(groupsObj)
     const groups = Object.values(groupsObj)
-    console.log(groups)
+
+
+    //Testing the edit feature using these
+    // const currentUser = useSelector(state => state.currentUser)
+
+
+    // const ownerCheck = (group) => {
+    //     return group.ownerId === currentUser.id
+    // }
+
     return (
         <>
             <h2>All Groups</h2>
             <ul className="group-list">
-                {console.log(groups)}
                 {groups.map((group) => (
-                    <p key={group.id}>{group.name}</p>
+                    <li key={group.id}>
+                        <p>{group.name}</p>
+                        <div>
+                            <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
+                                Update
+                            </button>
+                        </div>
+                    </li>
                 ))}
             </ul>
         </>

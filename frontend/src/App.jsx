@@ -9,6 +9,7 @@ import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
 import ListGroups from './components/Groups/ListGroups/ListGroups';
 import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
+import EditGroup from './components/Groups/EditGroup/EditGroup';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -45,6 +46,16 @@ const router = createBrowserRouter([
       {
         path: '/groups/new',
         element: <GroupCreationForm />
+      },
+      {
+        path: ':groupId',
+        element: <Outlet />,
+        children: [
+          {
+            path: 'edit',
+            element: <EditGroup />
+          }
+        ]
       }
     ]
   }
