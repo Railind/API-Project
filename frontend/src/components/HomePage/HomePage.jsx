@@ -16,6 +16,11 @@ export default function HomePage() {
         navigate('/groups')
     }
 
+
+    const allEvents = () => {
+        navigate('/events')
+    }
+
     const createGroup = () => {
         navigate('/groups/new')
     }
@@ -28,6 +33,14 @@ export default function HomePage() {
             <h1>Groups in the Outlands</h1>
             <div className="Apex buttons">
                 <div className="group-finder" onClick={allGroups}>
+                    <p>Click to see all events</p>
+                </div>
+            </div >
+
+
+            <h1>Events in the Outlands</h1>
+            <div className="Apex buttons">
+                <div className="group-finder" onClick={allEvents}>
                     <p>Click to see all groups</p>
                 </div>
             </div >

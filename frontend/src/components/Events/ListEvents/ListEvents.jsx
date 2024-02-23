@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 
-function ListGroups() {
+function ListEvents() {
     // const navigate = useNavigate()
-    const groupsObj = useSelector(state => state.groups)
-    const groups = Object.values(groupsObj)
+    const eventsObj = useSelector(state => state.events)
+    const events = Object.values(eventsObj)
 
 
     //Testing the edit feature using these
@@ -17,13 +17,11 @@ function ListGroups() {
     // }
     return (
         <>
-            <h2>All Groups</h2>
-            <ul className="group-list">
-                {groups.map((group) => (
-                    <li key={group.id}>
-                        <Link to={`/groups/${group.id}`}>
-                            <p>{group.name}</p>
-                        </Link>
+            <h2>All Events</h2>
+            <ul className="event-list">
+                {events.map((event) => (
+                    <li key={event.id}>
+                        <p>{event.name}</p>
                     </li>
                 ))}
             </ul>
@@ -31,4 +29,4 @@ function ListGroups() {
     );
 }
 
-export default ListGroups;
+export default ListEvents;

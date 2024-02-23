@@ -1,23 +1,30 @@
 import { csrfFetch } from "./csrf";
 
+
+export const LOAD_EVENTS = 'events/LOAD_EVENTS'
 export const CREATE_EVENT = 'events/CREATE_EVENTS'
 export const DELETE_EVENT = 'events/DELETE_EVENTS'
 export const UPDATE_EVENT = 'events/UPDATE_EVENTS'
-export const LOAD_EVENTINFO = 'events/LOAD_EVENTS'
+export const LOAD_EVENT_INFORMATION = 'events/LOAD_EVENTINFO'
+// export const EDIT_GROUP = 'events/'
 
 
 
+export const loadEvents = (events) => ({
+    type: LOAD_EVENTS,
+    events
+})
 
 export const createEvent = (event) => ({
     type: CREATE_EVENT,
     event
 })
 
-export const editGroup = (eventId, event) => ({
-    type: EDIT_GROUP,
-    eventId,
-    event
-})
+// export const editGroup = (eventId, event) => ({
+//     type: EDIT_GROUP,
+//     eventId,
+//     event
+// })
 
 export const deleteEvent = (eventId) => ({
     type: DELETE_EVENT,
@@ -59,10 +66,15 @@ const eventReducer = (state = {}, action) => {
             eventState[action.event.id] = action.event
             return eventState
         }
+        case DELETE_EVENT: {
+            const eventState = { ...state };
+            delete eventState[action.groupId]
+            return eventState
+        }
         case LOAD_EVENTS: {
             const eventState = { ...state };
             action.events.forEach(event => {
-                if (!eventsState[event.id]) {
+                if (!eventState[event.id]) {
                     eventState[event.id] = event;
                 }
             });
@@ -70,11 +82,6 @@ const eventReducer = (state = {}, action) => {
         }
         case LOAD_EVENT_INFORMATION: {
             const groupState = { ...state };
-            return groupState
-        }
-        case DELETE_GROUP: {
-            const groupState = { ...state };
-            delete groupState[action.groupId]
             return groupState
         }
         default:

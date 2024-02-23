@@ -11,6 +11,8 @@ import ListGroups from './components/Groups/ListGroups/ListGroups';
 import ListGroupInfo from './components/Groups/ListGroupInfo/ListGroupInfo';
 import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
 import EditGroup from './components/Groups/EditGroup/EditGroup';
+import ListEvents from './components/Events/ListEvents/ListEvents';
+import { thunkingEvents } from './store/events';
 function Layout() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -19,6 +21,7 @@ function Layout() {
     dispatch(sessionActions.restoreUser()).then(() => {
       setIsLoaded(true)
       dispatch(thunkingGroup())
+      dispatch(thunkingEvents())
     });
   }, [dispatch]);
 
@@ -52,10 +55,21 @@ const router = createBrowserRouter([
         element: <ListGroupInfo />,
 
       },
-
       {
         path: '/groups/:groupId/edit',
         element: <EditGroup />
+      },
+      {
+        path: '/events',
+        element: <ListEvents />
+      },
+      {
+        path: '/events/:eventId',
+        element: <ListEvents />
+      },
+      {
+        path: '/events/:eventId/edit',
+        element: <ListEvents />
       }
     ]
   }
