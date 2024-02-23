@@ -68,7 +68,7 @@ const GroupCreationForm = () => {
                 </select>
 
                 <select
-                    name="state"
+                    name="privacy"
                     id="group-state"
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
@@ -93,7 +93,7 @@ const GroupCreationForm = () => {
 
 
                 <select
-                    name="state"
+                    name="type"
                     id="group-type"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
