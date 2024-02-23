@@ -32,7 +32,7 @@ export const deleteGroup = (groupId) => ({
 })
 
 export const createGroup = (group) => ({
-    tpye: CREATE_GROUP,
+    type: CREATE_GROUP,
     group
 })
 
@@ -83,8 +83,8 @@ export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
 
 
 
-export const thunkGroupDeleter = (group) => async (dispatch) => {
-    const response = await csrfFetch(`/api/groups/${group.id}`,
+export const thunkGroupDeleter = (groupId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/groups/${groupId}`,
         {
             method: 'DELETE',
             headers: {
@@ -95,7 +95,7 @@ export const thunkGroupDeleter = (group) => async (dispatch) => {
     if (response.ok) {
         const message = await response.json()
         //We'll delete events later
-        dispatch(deleteGroup(group.id))
+        dispatch(deleteGroup(groupId))
         return message
     }
     // else return error = await response.json()

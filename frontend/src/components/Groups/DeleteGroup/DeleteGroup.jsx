@@ -5,16 +5,17 @@ import { thunkGroupDeleter } from "../../../store/groups";
 import { useNavigate } from "react-router-dom";
 
 
-const DeleteGroup = ({ group }) => {
+const DeleteGroup = ({ groupId }) => {
     const dispatch = useDispatch()
-    const navigate = useNavigate
+    const navigate = useNavigate()
 
+    console.log(groupId, 'This is our DELETED group ID')
 
 
 
     const deleteHandler = async (e) => {
         e.preventDefault()
-        dispatch(thunkGroupDeleter(group))
+        dispatch(thunkGroupDeleter(groupId))
         navigate('/groups')
     }
 

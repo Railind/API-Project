@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 function ListGroups() {
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     const groupsObj = useSelector(state => state.groups)
     const groups = Object.values(groupsObj)
 

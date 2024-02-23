@@ -50,12 +50,12 @@ const router = createBrowserRouter([
       {
         path: 'groups/:groupId',
         element: <ListGroupInfo />,
-        children: [
-          {
-            path: 'edit',
-            element: <EditGroup />
-          }
-        ]
+
+      },
+
+      {
+        path: '/groups/:groupId/edit',
+        element: <EditGroup />
       }
     ]
   }
