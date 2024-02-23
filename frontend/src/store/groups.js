@@ -1,5 +1,3 @@
-// import { csrfFetch } from './csrf';
-
 import { csrfFetch } from "./csrf"
 
 
@@ -42,7 +40,6 @@ export const thunkingGroup = () => async (dispatch) => {
     const response = await fetch('/api/groups')
     const groups = await response.json()
     dispatch(loadGroups(groups))
-    console.log('Testing')
 }
 
 export const thunkGroupCreator = (group) => async (dispatch) => {
