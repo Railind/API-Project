@@ -4,14 +4,16 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { thunkEventLoadInformation } from '../../../store/events';
+import { thunkGroupInfo } from '../../../store/groups';
 // import DeleteEvent from '../DeleteEvent/DeleteEvent';
 function ListEventInfo() {
     // const navigate = useNavigate()
     const { eventId } = useParams()
     const dispatch = useDispatch()
-    console.log(eventId, 'this is our groupId')
-    const events = useSelector(state => state.events)
-    const event = events[eventId]
+    // console.log(eventId, 'this is our groupId')
+    // const user = useSelector(state => state.session.user)
+    const event = useSelector(state => state.events[eventId])
+    const group = useSelector(state => state.groups[event?.groupId])
     //Testing the edit feature using these
 
 
@@ -20,7 +22,10 @@ function ListEventInfo() {
         if (eventId && !event?.description) {
             dispatch(thunkEventLoadInformation(eventId));
         }
-    }, [dispatch, eventId, event?.description]);
+        if (event?.groupId && !group) {
+            dispatch(thunkGroupInfo(event.groupId));
+        }
+    }, [dispatch, eventId, event?.description, event?.groupId, group]);
     // const ownerCheck = (group) => {
     //     return group.ownerId === currentUser.id
     // }
@@ -39,6 +44,18 @@ function ListEventInfo() {
             <img className='event-image' src={event.previewImage} alt="" />
 
             <h2>This event</h2>
+            <div className="group-info">
+                <Link to={`/groups/${group.id}`}>
+                    {group && (
+                        <div>
+                            <img className='group-image' src={group.previewImage} alt="" />
+                            <p>Group: {group.name}</p>
+                            <p>{group.private ? "Private" : "Public"}</p>
+                        </div>
+                    )}
+
+                </Link>
+            </div>
             <ul className="group-list">
                 <li key={event.id}>
                     <p>{event.name}</p>

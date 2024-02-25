@@ -7,13 +7,14 @@ import HomePage from './components/HomePage/HomePage';
 import Navigation from './components/Navigation/Navigation';
 import * as sessionActions from './store/session';
 import { thunkingGroup } from './store/groups';
+import { thunkingEvents } from './store/events';
 import ListGroups from './components/Groups/ListGroups/ListGroups';
 import ListGroupInfo from './components/Groups/ListGroupInfo/ListGroupInfo';
 import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
 import EditGroup from './components/Groups/EditGroup/EditGroup';
 import ListEvents from './components/Events/ListEvents/ListEvents';
 import ListEventInfo from './components/Events/ListEventInfo/ListEventInfo';
-import { thunkingEvents } from './store/events';
+import EventCreationForm from './components/Events/CreateEvent/CreateEvent';
 function Layout() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -69,8 +70,8 @@ const router = createBrowserRouter([
         element: <ListEventInfo />
       },
       {
-        path: '/events/:eventId/edit',
-        element: <ListEvents />
+        path: 'groups/:groupId/events/new',
+        element: <EventCreationForm />
       }
     ]
   }

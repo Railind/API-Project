@@ -38,10 +38,10 @@ export const deleteEvent = (eventId) => ({
 
 export const thunkingEvents = () => async (dispatch) => {
     const response = await fetch('/api/events')
-    const events = await response.json()
+    const eventsInfo = await response.json()
 
     if (response.ok) {
-        dispatch(loadEvents(events.Events))
+        dispatch(loadEvents(eventsInfo.Events))
     }
 }
 
@@ -99,21 +99,20 @@ const eventReducer = (state = {}, action) => {
             return eventState
         }
         case LOAD_EVENT_INFORMATION: {
-            const eventState = { ...state }
-            eventState[action.event.id] = action.event
-            return eventState
+            return {
+                ...state,
+                [action.event.id]: action.event
+            };
         }
         case DELETE_EVENT: {
             const eventState = { ...state };
-            delete eventState[action.groupId]
+            delete eventState[action.eventId]
             return eventState
         }
         case LOAD_EVENTS: {
             const eventState = { ...state };
             action.events.forEach(event => {
-                if (!eventState[event.id]) {
-                    eventState[event.id] = event;
-                }
+                eventState[event.id] = event;
             });
             return eventState;
         }
