@@ -98,7 +98,7 @@ module.exports = (sequelize, DataTypes) => {
         isDate: { msg: 'Must be a valid date.' },
         isAfter: {
           args: new Date().toJSON().slice(0, 10),
-          msg: 'Start date must be in the future'
+          msg: 'Start date must be in the future: sequelize :D'
         }
       }
     },
