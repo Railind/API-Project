@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 
 function ListEvents() {
@@ -21,7 +21,9 @@ function ListEvents() {
             <ul className="event-list">
                 {events.map((event) => (
                     <li key={event.id}>
-                        <p>{event.name}</p>
+                        <Link to={`/events/${event.id}`}>
+                            <p>{event.name}</p>
+                        </Link>
                     </li>
                 ))}
             </ul>

@@ -23,12 +23,12 @@ module.exports = {
     await GroupImage.bulkCreate([
       {
         groupId: 1,
-        url: 'www.coolpicture/22',
+        url: 'https://media.contentapi.ea.com/content/dam/apex-legends/common/articles/storm-point/updated/storm-point-map.jpg.adapt.1920w.jpg',
         preview: true
       },
       {
         groupId: 2,
-        url: 'www.coolpicture/2a22',
+        url: 'https://static.wikia.nocookie.net/apexlegends_gamepedia_en/images/6/63/Transition_Olympus.png/revision/latest/scale-to-width-down/1200?cb=20201105143428',
         preview: true
       }
     ], { validate: true });

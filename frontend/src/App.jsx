@@ -12,6 +12,7 @@ import ListGroupInfo from './components/Groups/ListGroupInfo/ListGroupInfo';
 import GroupCreationForm from './components/Groups/CreateGroup/CreateGroup';
 import EditGroup from './components/Groups/EditGroup/EditGroup';
 import ListEvents from './components/Events/ListEvents/ListEvents';
+import ListEventInfo from './components/Events/ListEventInfo/ListEventInfo';
 import { thunkingEvents } from './store/events';
 function Layout() {
   const dispatch = useDispatch();
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/events/:eventId',
-        element: <ListEvents />
+        element: <ListEventInfo />
       },
       {
         path: '/events/:eventId/edit',

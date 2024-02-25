@@ -17,7 +17,7 @@ function ListGroups() {
     // }
     return (
         <>
-            <h2>All Groups</h2>
+            <h2>Groups in Meetup</h2>
             <ul className="group-list">
                 {groups.map((group) => (
                     <li key={group.id}>

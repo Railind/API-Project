@@ -40,6 +40,26 @@ export const thunkingEvents = () => async (dispatch) => {
     }
 }
 
+export const thunkEventDeleter = (eventId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/events/${eventId}`,
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    )
+    if (response.ok) {
+        const message = await response.json()
+        //We'll delete events later
+        dispatch(deleteEvent(eventId))
+        return message
+    }
+    // else return error = await response.json()
+
+}
+
+
 export const thunkEventCreator = (event) => async (dispatch) => {
     const response = await csrfFetch('/api/groups/${groupId}/events',
         {
