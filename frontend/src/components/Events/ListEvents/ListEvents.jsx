@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 function ListEvents() {
     // const navigate = useNavigate()
+    // const eventsState = useSelector(state => state.events);
     const eventsObj = useSelector(state => state.events)
     const events = Object.values(eventsObj)
 
@@ -17,12 +18,32 @@ function ListEvents() {
     // }
     return (
         <>
-            <h2>All Events</h2>
+            <div>
+                <h1>Events</h1>
+                <h1>Groups</h1>
+            </div>
+            <h2>Events in Meetup</h2>
+
+            <ul className="group-list">
+                {events.map((event) => {
+                    <li key={event.id}>
+                        <Link to={`/events/${event.id}`}>
+                            <img className='event-image' src={event.previewImage} alt="" />
+                            <p>{event.name}</p>
+                            <p>{event.startDate}</p>
+                            <p>{event.endDate}</p>
+                        </Link>
+                    </li>
+                })}
+            </ul>
             <ul className="event-list">
                 {events.map((event) => (
                     <li key={event.id}>
                         <Link to={`/events/${event.id}`}>
+                            <img className='event-image' src={event.previewImage} alt="" />
                             <p>{event.name}</p>
+                            <p>{event.startDate}</p>
+                            <p>{event.endDate}</p>
                         </Link>
                     </li>
                 ))}

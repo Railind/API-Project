@@ -69,10 +69,20 @@ export const thunkingGroup = () => async (dispatch) => {
 }
 
 export const thunkGroupInfo = (groupId) => async (dispatch) => {
-    const response = await csrfFetch(`/api/groups/${groupId}`)
-    const group = await response.json()
-    dispatch(thunkGroupInfo(group))
-    return group;
+    try {
+        const response = await csrfFetch(`/api/groups/${groupId}`)
+        const group = await response.json()
+        console.log('Group information', group)
+        console.log(group.organizerId, 'Organizer Id')
+        console.log(group.Organizer, 'this is our organizer')
+        console.log(group.Organizer.firstName, 'this is our organizer FN')
+        console.log(group.Organizer.lastName, 'this is our organizer LN')
+        dispatch(thunkGroupInfo(group))
+        return group;
+    }
+    catch (error) {
+        console.error('Error fetching group information:', error);
+    }
 }
 
 
@@ -115,8 +125,8 @@ export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
 
 
 
-export const thunkGroupDeleter = (groupId) => async (dispatch) => {
-    const response = await csrfFetch(`/api/groups/${groupId}`,
+export const thunkGroupDeleter = (group) => async (dispatch) => {
+    const response = await csrfFetch(`/api/groups/${group.Id}`,
         {
             method: 'DELETE',
             headers: {
@@ -127,9 +137,10 @@ export const thunkGroupDeleter = (groupId) => async (dispatch) => {
     if (response.ok) {
         const message = await response.json()
         //We'll delete events later
-        dispatch(deleteGroup(groupId))
+        await dispatch(deleteGroup(group.id))
         return message
     }
+    else return response.json()
     // else return error = await response.json()
 
 }
@@ -186,10 +197,14 @@ export const thunkGroupMemberLoader = (groupId) => async (dispatch) => {
 
     if (response.ok) {
         const members = await response.json()
+        console.log(members, 'these are our members')
         dispatch(loadGroupMembers(groupId, members))
         return members
     }
-    else return response.json()
+    else {
+        const error = await response.json()
+        return error
+    }
 
 }
 
@@ -252,7 +267,8 @@ const groupReducer = (state = {}, action) => {
 
             return {
                 ...state, [action.groupId]: {
-                    ...state[action.groupId], Members
+                    ...state[action.groupId],
+                    Members
                 }
             }
         }

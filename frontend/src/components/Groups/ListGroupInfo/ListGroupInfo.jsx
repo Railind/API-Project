@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import DeleteGroup from '../DeleteGroup/DeleteGroup';
 
-import { thunkGroupEventLoader, thunkGroupMemberLoader, thunkGroupInfo } from '../../../store/groups';
+// import { thunkGroupEventLoader, thunkGroupMemberLoader, thunkGroupInfo } from '../../../store/groups';
+import { thunkGroupEventLoader, thunkGroupInfo, thunkGroupMemberLoader } from '../../../store/groups';
 function ListGroupInfo() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -18,36 +19,66 @@ function ListGroupInfo() {
     let events = useSelector(state => state.groups[groupId]?.Events)
     const user = useSelector(state => state.session.user)
     const eventCount = Object.values(eventsState).filter(event => event.groupId == groupId).length
+    const organizerId = group.organizerId;
 
+    useEffect(() => {
+        if (!group?.Organizer) dispatch(thunkGroupInfo(groupId));
+
+        return () => null;
+    }, [dispatch, groupId, group?.Organizer]);
+
+    useEffect(() => {
+        if (!group?.Members) dispatch(thunkGroupMemberLoader(groupId));
+
+        return () => null;
+    }, [dispatch, groupId, group?.Members, user]);
+
+    useEffect(() => {
+        if (!group?.Events) dispatch(thunkGroupEventLoader(groupId))
+
+        return () => null;
+    }, [dispatch, groupId, eventCount, group?.Events])
     if (!group) {
         return <p> Group not found!</p>
     }
-    useEffect(() => {
-        if (!group.Organizer) dispatch(thunkGroupInfo(groupId))
-    })
 
-    if (!eventsState) return null
+    const organizer = group?.Members?.[organizerId];
+    console.log(organizer)
 
-    // const isOwner = user?.id == group?.organizerId;
-    // let isMember;
-    // if (group?.Members) {
-    //     const members = Object.values(group?.Members);
+    const currentTime = new Date()
+    const upcomingEvents = []
+    const pastEvents = []
+    if (events) {
+        events.sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
 
-    //     isMember = members.filter(member => {
-    //         return member.id == user.id
-    //     }).length > 0
-    // }
+        events?.forEach(event => {
+            console.log(event.startDate, 'STARTDATE OF EACH EVENT')
+            console.log(currentTime)
+            new Date(event.startDate) < currentTime ? pastEvents.push(event) : upcomingEvents.push(event);
+        })
+    }
+
+
+    console.log('All events', events)
+    console.log('New events', pastEvents)
+    console.log('Past events', upcomingEvents)
+
+    const ownerCheck = user?.id == group?.organizerId;
+
 
     // const ownerCheck = (group) => {
-    //     return group.ownerId === currentUser.id
+    //     return user && group.ownerId === user.id
     // }
 
-
-
-    // const groupImages = group?.GroupImages || []
+    group?.GroupImages || []
     // const previewImage = groupImages.find(image => image.preview === true)
     // console.log(previewImage, 'our image')
+    if (!group) {
+        return <p> Group not found!</p>
+    }
 
+    // console.log('ownerCheck:', ownerCheck(group));
+    // console.log('memberCheck:', memberCheck);
 
     return (
         <>
@@ -66,19 +97,48 @@ function ListGroupInfo() {
                     <p>{group.name}</p>
                     <p>{group.city}</p>
                     <h4>{events?.length ? events?.length : 0} events · {group?.private ? "Private" : "Public"}</h4>
-                    <h4>Organized by {group?.Organizer?.firstName} {group?.Organizer?.lastName}</h4>
+                    <h4>Organized by {organizer?.firstName} {organizer?.lastName}</h4>
                     <p>{group.state}</p>
                     <h3>What we&rsquo;re about</h3>
                     <p>{group.about}</p>
 
 
-                    <div>
+                    <div className="buttonDiv">
+                        {(!ownerCheck) && <button id="join-group" onClick={() => alert('Feature Coming Soon...')}>Join this group</button>}
+                    </div>
+                    {(ownerCheck) && <div className="OwnersButtons">
+                        <button onClick={() => navigate(`/groups/${group.id}/events/new`)}>
+                            New Event
+                        </button>
                         <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
                             Update
                         </button>
-                    </div>
-                    <div>
-                        <DeleteGroup />
+                        <DeleteGroup groupId={group.id} />
+                    </div>}
+                    <div className="events-area">
+                        <div className="upcoming-events" style={{ display: upcomingEvents.length > 0 ? 'block' : 'none' }}>
+                            <h3>Upcoming Events({upcomingEvents.length})</h3>
+                            {pastEvents.map(event => (
+                                <div key={event.id} className="event">
+                                    <img src={event.previewImage} alt="Event" />
+                                    <p>Attendees: {event.numAttending}</p>
+                                    <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
+                                    <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="past-events" style={{ display: pastEvents.length > 0 ? 'block' : 'none' }}>
+                            <h3>Past Events ({pastEvents.length})</h3>
+                            {pastEvents.map(event => (
+                                <div key={event.id} className="event">
+                                    <img src={event.previewImage} alt="Event" />
+                                    <p>Attendees: {event.numAttending}</p>
+                                    <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
+                                    <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
+                                </div>
+                            ))}
+                        </div>
+
                     </div>
                 </li>
 

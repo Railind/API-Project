@@ -30,18 +30,18 @@ export default function HomePage() {
         < div className="homePage" >
 
 
-            <h1>Groups in the Outlands</h1>
+            <h1>See All Groups</h1>
             <div className="Apex buttons">
                 <div className="group-finder" onClick={allGroups}>
-                    <p>Click to see all events</p>
+                    <p>Click to see all Groups</p>
                 </div>
             </div >
 
 
-            <h1>Events in the Outlands</h1>
+            <h1>Find an Event</h1>
             <div className="Apex buttons">
                 <div className="group-finder" onClick={allEvents}>
-                    <p>Click to see all groups</p>
+                    <p>Click to see all Events</p>
                 </div>
             </div >
 
