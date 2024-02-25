@@ -9,12 +9,12 @@ const GroupCreationForm = () => {
 
     const [name, setName] = useState("")
     const [about, setAbout] = useState("")
-    const [type, setType] = useState("")
+    const [type, setType] = useState("Online")
     const [city, setCity] = useState("")
-    const [state, setState] = useState("")
+    const [state, setState] = useState("WE")
     // const [previewImg, setPreviewImg] = useState("")
     // const [images, setImages] = useState("")
-    const [privacy, setPrivacy] = useState("temp")
+    const [privacy, setPrivacy] = useState(false)
 
 
     // const [validationErrors, setValidationErrors] = useState({})
@@ -28,7 +28,8 @@ const GroupCreationForm = () => {
         private: privacy
     }
 
-    const submitForm = async () => {
+    const submitForm = async (e) => {
+        e.preventDefault()
         console.log(newGroupBody)
         await dispatch(thunkGroupCreator(newGroupBody))
     }
@@ -61,20 +62,20 @@ const GroupCreationForm = () => {
                     onChange={(e) => setState(e.target.value)}
                 >
                     <option value="WE">Worlds Edge</option>
-                    <option value="WE">Olypmus</option>
+                    <option value="OL">Olypmus</option>
                     <option value="KC">Kings Canyon</option>
-                    <option value="OL">Storm Point</option>
+                    <option value="SP">Storm Point</option>
                     <option value="BM">Broken Moon</option>
                 </select>
 
                 <select
                     name="privacy"
-                    id="group-state"
+                    id="group-privacy"
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
                 >
-                    <option value={"false"}>False</option>
-                    <option value={"true"}>True</option>
+                    <option value={false}>False</option>
+                    <option value={true}>True</option>
 
                 </select>
 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import DeleteGroup from '../DeleteGroup/DeleteGroup';
-
+import OpenModalButton from '../../OpenModalButton/OpenModalButton';
 // import { thunkGroupEventLoader, thunkGroupMemberLoader, thunkGroupInfo } from '../../../store/groups';
 import { thunkGroupEventLoader, thunkGroupInfo, thunkGroupMemberLoader } from '../../../store/groups';
 function ListGroupInfo() {
@@ -113,7 +113,10 @@ function ListGroupInfo() {
                         <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
                             Update
                         </button>
-                        <DeleteGroup groupId={group.id} />
+                        <OpenModalButton
+                            buttonText="Delete"
+                            modalComponent={<DeleteGroup group={group} />}
+                        />
                     </div>}
                     <div className="events-area">
                         <div className="upcoming-events" style={{ display: upcomingEvents.length > 0 ? 'block' : 'none' }}>

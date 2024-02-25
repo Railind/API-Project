@@ -21,9 +21,8 @@ export const loadGroupInfo = (group) => ({
     group
 })
 
-export const editGroup = (groupId, group) => ({
+export const editGroup = (group) => ({
     type: EDIT_GROUP,
-    groupId,
     group
 })
 
@@ -106,6 +105,8 @@ export const thunkGroupCreator = (group) => async (dispatch) => {
 
 
 export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
+    console.log(group, 'group')
+    console.log(groupId, 'groupID')
     const response = await csrfFetch(`/api/groups/${groupId}`,
         {
             method: 'PUT',
@@ -117,7 +118,7 @@ export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
     )
     if (response.ok) {
         const group = await response.json()
-        dispatch(editGroup(groupId, group))
+        await dispatch(editGroup(groupId, group))
         return group
     }
     // else return error = await response.json()

@@ -5,12 +5,12 @@ import { thunkEventCreator } from "../../../store/events";
 import { useParams } from "react-router-dom";
 
 const EventCreationForm = () => {
-    // const navigate = useNavigate()
     const dispatch = useDispatch()
+    // const navigate = useNavigate()
 
     const { groupId } = useParams()
     const [name, setName] = useState("")
-    const [type, setType] = useState("")
+    const [type, setType] = useState("In person")
     // const [capacity, setCapacity] = useState("")
     const [price, setPrice] = useState("")
     const [startDate, setStartDate] = useState("")
@@ -30,7 +30,7 @@ const EventCreationForm = () => {
     const newEventBody = {
         name,
         type,
-        // capacity,
+        capacity: 50,
         price,
         startDate,
         endDate,
@@ -38,8 +38,11 @@ const EventCreationForm = () => {
         description,
     }
 
-    const submitForm = async () => {
+    const submitForm = async (e) => {
+        e.preventDefault()
         console.log(newEventBody)
+        console.log('newDate', new Date())
+        console.log(groupId)
         await dispatch(thunkEventCreator(newEventBody))
     }
 
@@ -75,6 +78,7 @@ const EventCreationForm = () => {
                 <input
                     type="datetime-local"
                     value={startDate}
+                    min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setStartDate(e.target.value)}
                 />
                 {/* {"startDate" in validationErrors && (

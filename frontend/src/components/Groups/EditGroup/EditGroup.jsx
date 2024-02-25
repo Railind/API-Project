@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom"
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { thunkGroupEditor } from "../../../store/groups";
 
 const EditGroup = () => {
@@ -11,13 +11,14 @@ const EditGroup = () => {
     const dispatch = useDispatch()
     const [name, setName] = useState("")
     const [about, setAbout] = useState("")
-    const [type, setType] = useState("")
+    const [type, setType] = useState("Online")
     const [city, setCity] = useState("")
-    const [state, setState] = useState("")
-    const [privacy, setPrivacy] = useState("temp")
+    const [state, setState] = useState("WE")
+    const [privacy, setPrivacy] = useState(false)
     const { groupId } = useParams()
-    const group = useSelector(state => state.groups[groupId])
-    const user = useSelector(state => state.session.user)
+    console.log(groupId)
+    // const group = useSelector(state => state.groups[groupId])
+    // const user = useSelector(state => state.session.user)
 
     // const [previewImg, setPreviewImg] = useState("")
     // const [images, setImages] = useState("")
@@ -26,13 +27,14 @@ const EditGroup = () => {
     // const [validationErrors, setValidationErrors] = useState({})
 
 
-    const ownerCheck = group?.organizerId === user?.id
-    if (!ownerCheck) navigate('/')
+    // const ownerCheck = group?.organizerId === user?.id
+    // if (!ownerCheck) navigate('/')
 
 
 
 
     const updatedGroupBody = {
+        groupId,
         name,
         about,
         type,
@@ -43,13 +45,19 @@ const EditGroup = () => {
 
 
 
-    const submitForm = async () => {
-        await dispatch(thunkGroupEditor(updatedGroupBody))
+    const submitForm = async (e) => {
+        e.preventDefault()
+        console.log(updatedGroupBody)
+        await dispatch(thunkGroupEditor(groupId, updatedGroupBody))
+        setTimeout(() => {
+            navigate('/groups')
+        },
+            500)
     }
 
     return (
         <section className="new-group">
-            <p>Edit your Group :D</p>
+            <p>new group :D</p>
             <form onSubmit={submitForm}>
                 <input
                     type="text"
@@ -75,20 +83,20 @@ const EditGroup = () => {
                     onChange={(e) => setState(e.target.value)}
                 >
                     <option value="WE">Worlds Edge</option>
-                    <option value="WE">Olypmus</option>
+                    <option value="OL">Olypmus</option>
                     <option value="KC">Kings Canyon</option>
-                    <option value="OL">Storm Point</option>
+                    <option value="SP">Storm Point</option>
                     <option value="BM">Broken Moon</option>
                 </select>
 
                 <select
                     name="privacy"
-                    id="group-state"
+                    id="group-privacy"
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
                 >
-                    <option value={"false"}>False</option>
-                    <option value={"true"}>True</option>
+                    <option value={false}>False</option>
+                    <option value={true}>True</option>
 
                 </select>
 

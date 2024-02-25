@@ -1,10 +1,8 @@
 // import { useState } from "react";
 import { useDispatch } from "react-redux";
-// import { useNavigate } from "react-router-dom";
 import { thunkGroupDeleter } from "../../../store/groups";
 import { useNavigate } from "react-router-dom";
-
-
+import { useModal } from "../../../context/Modal";
 // export function ModalProvider({ children }) {
 //     const modalRef = useRef();
 //     const [modalContent, setModalContent] = useState(null);
@@ -61,21 +59,31 @@ import { useNavigate } from "react-router-dom";
 const DeleteGroup = ({ group }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    console.log(group, 'This is our DELETED group ID')
+    // console.log(group, 'This is our DELETED group ID')
+    const closeModal = useModal()
 
 
 
     const deleteHandler = async (e) => {
         e.preventDefault()
         dispatch(thunkGroupDeleter(group))
+        closeModal()
         navigate('/groups')
     }
 
 
+    const cancelHandler = async (e) => {
+        e.preventDefault(
+            closeModal()
+        )
+    }
+
     return <div className='delete-group'>
-        <p> Do you want to Delete this group?</p>
-        <button onClick={deleteHandler}>Confirm</button>
+        <h1> Confirm Delete </h1>
+        <h3> Are you sure you want to remove this group?</h3>
+        <button id="delet-button" onClick={deleteHandler}>Confirm</button>
+        <button id="cancel-button" onClick={cancelHandler}>Confirm</button>
+
     </div>
 }
 
