@@ -2,10 +2,10 @@ import { csrfFetch } from "./csrf";
 
 
 export const LOAD_EVENTS = 'events/LOAD_EVENTS'
+export const LOAD_EVENT_INFORMATION = 'events/LOAD_EVENT_INFORMATION'
 export const CREATE_EVENT = 'events/CREATE_EVENTS'
 export const DELETE_EVENT = 'events/DELETE_EVENTS'
 export const UPDATE_EVENT = 'events/UPDATE_EVENTS'
-export const LOAD_EVENT_INFORMATION = 'events/LOAD_EVENTINFO'
 // export const EDIT_GROUP = 'events/'
 
 
@@ -13,6 +13,11 @@ export const LOAD_EVENT_INFORMATION = 'events/LOAD_EVENTINFO'
 export const loadEvents = (events) => ({
     type: LOAD_EVENTS,
     events
+})
+
+export const loadEventInformation = (event) => ({
+    type: LOAD_EVENT_INFORMATION,
+    event
 })
 
 export const createEvent = (event) => ({
@@ -38,6 +43,13 @@ export const thunkingEvents = () => async (dispatch) => {
     if (response.ok) {
         dispatch(loadEvents(events.Events))
     }
+}
+
+export const thunkEventLoadInformation = (eventId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/events/${eventId}`)
+    const event = await response.json()
+
+    if (response.ok) dispatch(loadEventInformation(event))
 }
 
 export const thunkEventDeleter = (eventId) => async (dispatch) => {
@@ -86,6 +98,11 @@ const eventReducer = (state = {}, action) => {
             eventState[action.event.id] = action.event
             return eventState
         }
+        case LOAD_EVENT_INFORMATION: {
+            const eventState = { ...state }
+            eventState[action.event.id] = action.event
+            return eventState
+        }
         case DELETE_EVENT: {
             const eventState = { ...state };
             delete eventState[action.groupId]
@@ -99,10 +116,6 @@ const eventReducer = (state = {}, action) => {
                 }
             });
             return eventState;
-        }
-        case LOAD_EVENT_INFORMATION: {
-            const groupState = { ...state };
-            return groupState
         }
         default:
             return state;

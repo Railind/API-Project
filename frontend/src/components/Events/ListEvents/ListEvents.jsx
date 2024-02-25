@@ -8,7 +8,11 @@ function ListEvents() {
     const eventsObj = useSelector(state => state.events)
     const events = Object.values(eventsObj)
 
+    console.log(events, 'our events :3')
 
+    events.map((event) => {
+        console.log(event.previewImage)
+    })
     //Testing the edit feature using these
     // const currentUser = useSelector(state => state.currentUser)
 
@@ -32,6 +36,7 @@ function ListEvents() {
                             <p>{event.name}</p>
                             <p>{event.startDate}</p>
                             <p>{event.endDate}</p>
+                            <p>{event.previewImage}</p>
                         </Link>
                     </li>
                 })}
