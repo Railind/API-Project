@@ -22,7 +22,7 @@ module.exports = {
     await EventImage.bulkCreate([
       {
         eventId: 1,
-        url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhDMkowWU_BWUo7MDntEpURxK6_5MLgD9x5as1uLHo7f2Q7fxHerMHvtq9EIbWMpGpgLo9nUML1YUMqpPTBjA9P4rAYkNXQVCTVCRmaFJ4zQKu6dnMdtZL0dM7ZqasqD1_UgfYNfuqHuUBtdo7scnS73olBccARjLCpVlI3QbELM-p10Z8EhsPaqk221A/s1600/APEX-LEGENDS-WALLPAPER.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/en/d/db/Apex_legends_cover.jpg',
         preview: true
       },
       {
