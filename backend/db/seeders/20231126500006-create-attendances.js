@@ -47,9 +47,6 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     options.tableName = 'Attendances';
-    const Op = Sequelize.Op;
-    return queryInterface.bulkDelete(options, {
-      eventId: { [Op.in]: [1, 2] }
-    }, {});
+    return queryInterface.bulkDelete(options, null, {});;
   }
 };

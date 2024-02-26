@@ -47,10 +47,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     options.tableName = 'Events';
-    const Op = Sequelize.Op;
-    return queryInterface.bulkDelete(options, {
-      name: { [Op.in]: ['Art Station', 'Coffee and Cars'] }
-    }, {});
+    return queryInterface.bulkDelete(options, null, {});;
     /**
      * Add commands to revert seed here.
      *
