@@ -36,11 +36,11 @@ export const createGroup = (group) => ({
     group
 })
 
-export const addGroupImages = (groupId, images) => ({
-    type: ADD_GROUP_PREVIEW_IMAGE,
-    groupId,
-    images
-})
+// export const addGroupImages = (groupId, images) => ({
+//     type: ADD_GROUP_PREVIEW_IMAGE,
+//     groupId,
+//     images
+// })
 
 export const addGroupPreviewImage = (groupId, image) => ({
     type: ADD_GROUP_PREVIEW_IMAGE,
@@ -146,37 +146,37 @@ export const thunkGroupDeleter = (groupId) => async (dispatch) => {
 
 }
 
-export const thunkGroupAddImages = (groupId, images) => async (dispatch) => {
-    const formData = new FormData();
-    Array.from(images).forEach(image => formData.append('images', image))
+// export const thunkGroupAddImages = (groupId, images) => async (dispatch) => {
+//     const formData = new FormData();
+//     Array.from(images).forEach(image => formData.append('images', image))
 
-    const response = await csrfFetch(`/api/groups/${groupId}/images`, {
-        method: 'POST',
-        body: formData
-    })
+//     const response = await csrfFetch(`/api/groups/${groupId}/images`, {
+//         method: 'POST',
+//         body: formData
+//     })
 
-    if (response.ok) {
-        const newImages = await response.json()
-        //We'll delete events later
-        await dispatch(addGroupPreviewImage(groupId, newImages))
-        return newImages
-    }
-    else return response
-}
+//     if (response.ok) {
+//         const newImages = await response.json()
+//         //We'll delete events later
+//         await dispatch(addGroupPreviewImage(groupId, newImages))
+//         return newImages
+//     }
+//     else return response
+// }
 
 export const thunkGroupAddPreviewImage = (groupId, image) => async (dispatch) => {
-    const formData = new FormData();
-    formData.append('previewImage', image)
-
-    const response = await csrfFetch(`/api/groups/${groupId}/prviewImage`, {
+    const response = await csrfFetch(`/api/groups/${groupId}/images`, {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(image)
     })
 
     if (response.ok) {
         const newImage = await response.json()
         //We'll delete events later
-        await dispatch(addGroupPreviewImage(groupId, newImage))
+        await dispatch(addGroupPreviewImage(groupId,))
         return newImage
     }
     else return response
@@ -237,19 +237,21 @@ const groupReducer = (state = {}, action) => {
             groupState[action.group.id] = action.group
             return groupState
         }
-        case ADD_GROUP_IMAGES: {
-            return {
-                ...state, [action.groupId]: {
-                    ...state[action.groupId], Events: action.events.Events
-                }
-            }
-        }
+        // case ADD_GROUP_IMAGES: {
+        //     return {
+        //         ...state, [action.groupId]: {
+        //             ...state[action.groupId], Events: action.events.Events
+        //         }
+        //     }
+        // }
         case ADD_GROUP_PREVIEW_IMAGE: {
             return {
                 ...state,
                 [action.groupId]: {
+
                     ...state[action.groupId],
-                    GroupImages: [...state[action.groupId].GroupImages, action.image]
+                    GroupImages: [...(state.GroupImages || []),
+                    action.groupId.image,]
                 }
             };
         }

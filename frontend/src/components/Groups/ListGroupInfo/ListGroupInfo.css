@@ -1,0 +1,56 @@
+.upcoming-events {
+
+    gap: 10px;
+    border: 2px solid grey;
+    background-color: rgb(219, 219, 219);
+}
+
+.event {
+    padding-left: 20px;
+    width: 1200px;
+    background-color: white;
+    margin-left: 50px;
+    margin-right: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.groupPanel {
+    display: flex;
+    margin-left: 40px;
+    margin-bottom: 40px;
+}
+
+.return-to-groupsView {
+    margin-left: 40px
+}
+
+.group-info {
+    background-color: rgb(169, 169, 169);
+}
+
+.group-image {
+    width: 800px;
+    height: 400px;
+}
+
+.event-img {
+    width: 400px;
+    height: 200px;
+}
+
+.infoandbuttons {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.events-area {
+    display: flex;
+    margin-left: 20px;
+}
+
+.eventTitle {
+    margin-left: 40px
+}

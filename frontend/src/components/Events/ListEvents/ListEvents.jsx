@@ -7,7 +7,7 @@ function ListEvents() {
     // const eventsState = useSelector(state => state.events);
     const eventsObj = useSelector(state => state.events)
     const events = Object.values(eventsObj)
-
+    console.log(eventsObj)
     // console.log(events, 'our events :3')
 
     // events.map((event) => {

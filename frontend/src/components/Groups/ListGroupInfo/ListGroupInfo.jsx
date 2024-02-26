@@ -1,3 +1,4 @@
+import './ListGroupInfo.css';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -14,6 +15,7 @@ function ListGroupInfo() {
     const { groupId } = useParams();
     const groups = useSelector(state => state.groups);
     const group = groups[groupId];
+
     const user = useSelector(state => state.session.user);
 
     useEffect(() => {
@@ -36,81 +38,81 @@ function ListGroupInfo() {
     const organizer = group.Members?.[organizerId] || {};
 
     const events = group.Events || [];
+    console.log(events, 'events')
     const currentTime = new Date();
     const upcomingEvents = events.filter(event => new Date(event.startDate) >= currentTime);
     const pastEvents = events.filter(event => new Date(event.startDate) < currentTime);
 
     const ownerCheck = user?.id === group.organizerId;
 
-    return (
-        <>
-            <div className='return-to-groupsView'>
-                <Link id='back-to-groups' to={'/groups'}>Back to Groups</Link>
-            </div>
-            <div>
-                <img className='group-image' src={group.previewImage} alt="" />
-            </div>
-
-
-            <h2>This group</h2>
-            <ul className="group-list">
-                <li key={group.id}>
-                    <p>This is details about our group :o</p>
-                    <p>{group.name}</p>
-                    <p>{group.city}</p>
-                    <h4>{events?.length ? events?.length : 0} events · {group?.private ? "Private" : "Public"}</h4>
-                    <h4>Organized by {organizer?.firstName} {organizer?.lastName}</h4>
-                    <p>{group.state}</p>
-                    <h3>What we&rsquo;re about</h3>
-                    <p>{group.about}</p>
-
-
-                    <div className="buttonDiv">
-                        {(!ownerCheck) && <button id="join-group" onClick={() => alert('Feature Coming Soon...')}>Join this group</button>}
+    return <>
+        <div className="group-info-container">
+            <div className="group-info-content">
+                <div className="groupOrganizer">
+                    <div className='return-to-groupsView'>
+                        <Link id='back-to-groups' to={'/groups'}>Back to Groups</Link>
                     </div>
-                    {(ownerCheck) && <div className="OwnersButtons">
-                        <button onClick={() => navigate(`/groups/${group.id}/events/new`)}>
-                            New Event
-                        </button>
-                        <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
-                            Update
-                        </button>
-                        <OpenModalButton
-                            buttonText="Delete"
-                            modalComponent={<DeleteGroup group={group} />}
-                        />
-                    </div>}
-                    <div className="events-area">
-                        <div className="upcoming-events" style={{ display: upcomingEvents.length > 0 ? 'block' : 'none' }}>
-                            <h3>Upcoming Events({upcomingEvents.length})</h3>
-                            {pastEvents.map(event => (
-                                <div key={event.id} className="event">
-                                    <img src={event.previewImage} alt="Event" />
-                                    <p>Attendees: {event.numAttending}</p>
-                                    <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
-                                    <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
+                    <div className="groupPanel">
+                        <img className='group-image' src={group.previewImage} alt="" />
+                        <div className='infoandbuttons'>
+                            <h2>{group.name}</h2>
+                            <h3>{group.city}</h3>
+                            <h3>{group.state}</h3>
+                            <h4>{events?.length ? events?.length : 0} events · {group?.private ? "Private" : "Public"}</h4>
+                            <h4>Organized by {organizer?.firstName} {organizer?.lastName}</h4>
+                            <h3>What we&rsquo;re about</h3>
+                            <p>{group.about}</p>
+                            <div className="buttonsDiv">
+                                <div className="buttonDiv">
+                                    {(!ownerCheck) && (user) && <button id="join-group" onClick={() => alert('Feature Coming Soon...')}>Join this group</button>}
                                 </div>
-                            ))}
+                                {(ownerCheck) && <div className="OwnersButtons">
+                                    <button onClick={() => navigate(`/groups/${group.id}/events/new`)}>
+                                        New Event
+                                    </button>
+                                    <button onClick={() => navigate(`/groups/${group.id}/edit`)}>
+                                        Update
+                                    </button>
+                                    <OpenModalButton
+                                        buttonText="Delete"
+                                        modalComponent={<DeleteGroup group={group} />}
+                                    />
+                                </div>}
+                            </div>
                         </div>
-                        <div className="past-events" style={{ display: pastEvents.length > 0 ? 'block' : 'none' }}>
-                            <h3>Past Events ({pastEvents.length})</h3>
-                            {pastEvents.map(event => (
-                                <div key={event.id} className="event">
-                                    <img src={event.previewImage} alt="Event" />
-                                    <p>Attendees: {event.numAttending}</p>
-                                    <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
-                                    <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
-                                </div>
-                            ))}
-                        </div>
-
-
                     </div>
-                </li>
-
-            </ul>
-        </>
-    );
+                </div>
+            </div>
+        </div>
+        <div className="events-info-container">
+            <div className="events-area">
+                <div className="upcoming-events" style={{ display: upcomingEvents.length > 0 ? 'block' : 'none' }}>
+                    <h3 className="eventTitle">Upcoming Events({upcomingEvents.length})</h3>
+                    {upcomingEvents.map(event => (
+                        <div key={event.id} className="event">
+                            <h3>{event.name}</h3>
+                            <img className="event-img" src={event.previewImage} alt="Event" />
+                            <p>Attendees: {event.numAttending}</p>
+                            <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
+                            <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className="past-events" style={{ display: pastEvents.length > 0 ? 'block' : 'none' }}>
+                    <h3 className="eventTitle">Past Events ({pastEvents.length})</h3>
+                    {pastEvents.map(event => (
+                        <div key={event.id} className="event">
+                            <h2>{event.name}</h2>
+                            <img className="event-img" src={event.previewImage} alt="Event" />
+                            <p>Attendees: {event.numAttending}</p>
+                            <p>Start Date: {new Date(event.startDate).toLocaleDateString()}</p>
+                            <p>End Date: {new Date(event.endDate).toLocaleDateString()}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    </>
 }
 
 export default ListGroupInfo;

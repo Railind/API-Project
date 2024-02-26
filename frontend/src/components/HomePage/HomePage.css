@@ -1,0 +1,111 @@
+.homepage-container {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.header-info {
+    width: 300px
+}
+
+.header-container {
+    margin-left: 200px;
+    margin-right: 200px;
+    display: flex;
+    gap: 15px
+}
+
+.columns-container {
+    background-color: rgb(247, 240, 213);
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 80px;
+}
+
+
+.join-meetup-btn-container .join-meetup {
+    background-color: teal;
+    color: white;
+    width: 200px;
+    height: 50px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 50px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer
+}
+
+.column:hover {
+    border: 5px solid teal;
+}
+
+.columnTwo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.enabled {
+    cursor: pointer
+}
+
+.enabled:hover {
+    border: 5px solid teal;
+}
+
+.find-event-btn {
+    color: teal
+}
+
+.see-all-groups-btn {
+    color: teal
+}
+
+.how-works {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.join-meetup-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.join-meetup {
+    background-color: teal;
+    color: white;
+    width: 200px;
+    height: 50px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bolder
+}
+
+.teal {
+    color: teal;
+}
+
+.grey {
+    color: grey
+}

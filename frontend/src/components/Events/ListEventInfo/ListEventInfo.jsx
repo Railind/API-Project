@@ -21,6 +21,8 @@ function ListEventInfo() {
     const organizerButtons = (!sessionUser || group.length === 1 && sessionUser.id !== group[0].Organizer.id) ? "hidden" : null
 
 
+    console.log(event)
+
     useEffect(() => {
         if (eventId && !event?.description) {
             dispatch(thunkEventLoadInformation(eventId));

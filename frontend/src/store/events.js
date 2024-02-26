@@ -48,6 +48,8 @@ export const thunkingEvents = () => async (dispatch) => {
     const response = await fetch('/api/events')
     const eventsInfo = await response.json()
 
+    console.log(eventsInfo)
+
     if (response.ok) {
         dispatch(loadEvents(eventsInfo.Events))
     }

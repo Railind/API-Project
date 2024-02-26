@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { thunkGroupCreator } from "../../../store/groups";
+import { thunkGroupAddPreviewImage, thunkGroupCreator } from "../../../store/groups";
 
 const GroupCreationForm = () => {
     const navigate = useNavigate()
@@ -30,14 +30,20 @@ const GroupCreationForm = () => {
         city,
         state: state.toUpperCase(),
         private: privacy,
-        url
+    }
+
+    const newImageBody = {
+        url,
+        preview: 1,
     }
 
     const submitForm = async (e) => {
         e.preventDefault()
-        // console.log(newGroupBody)
+        console.log(newGroupBody)
+        console.log(newImageBody)
         const newGroup = await dispatch(thunkGroupCreator(newGroupBody))
         const newGroupId = newGroup.id
+        await dispatch(thunkGroupAddPreviewImage(newImageBody, newGroupId))
         navigate(`/groups/${newGroupId}`)
     }
 

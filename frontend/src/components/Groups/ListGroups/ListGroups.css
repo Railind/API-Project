@@ -1,0 +1,44 @@
+.NavigateButtons {
+    display: flex;
+    justify-content: center;
+    gap: 300px;
+    margin-bottom: 100px;
+}
+
+.eventBttn {
+    color: grey;
+    text-decoration: none;
+}
+
+.eventBttnInterior:hover {
+    cursor: pointer
+}
+
+.groups {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.singleGroup {
+    display: flex;
+    background-color: rgb(191, 191, 191);
+    flex-direction: row;
+    margin-bottom: 40px;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.group-info {
+    flex: 1;
+    max-width: 50%;
+    text-align: left;
+}
+
+.group-info p,
+.group-info h4 {
+    margin: 0;
+    /* Remove default margins */
+}
