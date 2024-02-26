@@ -9,79 +9,38 @@ import OpenModalButton from '../../OpenModalButton/OpenModalButton';
 // import { thunkGroupEventLoader, thunkGroupMemberLoader, thunkGroupInfo } from '../../../store/groups';
 import { thunkGroupEventLoader, thunkGroupInfo, thunkGroupMemberLoader } from '../../../store/groups';
 function ListGroupInfo() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const { groupId } = useParams()
-    const groups = useSelector(state => state.groups)
-    const group = groups[groupId]
-
-    const user = useSelector(state => state.session.user)
-
-    const eventsState = useSelector(state => state.events)
-    let events = useSelector(state => state.groups[groupId]?.Events)
-    const eventCount = Object.values(eventsState).filter(event => event.groupId == groupId).length
-    const organizerId = group.organizerId;
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { groupId } = useParams();
+    const groups = useSelector(state => state.groups);
+    const group = groups[groupId];
+    const user = useSelector(state => state.session.user);
 
     useEffect(() => {
         if (!group?.Organizer) dispatch(thunkGroupInfo(groupId));
-
-        return () => null;
     }, [dispatch, groupId, group?.Organizer]);
 
     useEffect(() => {
         if (!group?.Members) dispatch(thunkGroupMemberLoader(groupId));
-
-        return () => null;
     }, [dispatch, groupId, group?.Members, user]);
 
     useEffect(() => {
-        if (!group?.Events) dispatch(thunkGroupEventLoader(groupId))
+        dispatch(thunkGroupEventLoader(groupId));
+    }, [dispatch, groupId]);
 
-        return () => null;
-    }, [dispatch, groupId, eventCount, group?.Events])
     if (!group) {
         return <p> Group not found!</p>
     }
 
-    const organizer = group?.Members?.[organizerId];
-    console.log(organizer)
+    const organizerId = group.organizerId;
+    const organizer = group.Members?.[organizerId] || {};
 
-    const upcomingEvents = []
-    const pastEvents = []
+    const events = group.Events || [];
+    const currentTime = new Date();
+    const upcomingEvents = events.filter(event => new Date(event.startDate) >= currentTime);
+    const pastEvents = events.filter(event => new Date(event.startDate) < currentTime);
 
-
-    const currentTime = new Date()
-    if (events) {
-        events.sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-
-        events.forEach(event => {
-            if (new Date(event.startDate) < currentTime) {
-                pastEvents.push(event);
-            } else {
-                upcomingEvents.push(event);
-            }
-        })
-    }
-
-
-    console.log('All events', events)
-    console.log('New events', pastEvents)
-    console.log('Past events', upcomingEvents)
-
-    const ownerCheck = user?.id == group?.organizerId;
-
-
-    // const ownerCheck = (group) => {
-    //     return user && group.ownerId === user.id
-    // }
-
-    group?.GroupImages || []
-    // const previewImage = groupImages.find(image => image.preview === true)
-    // console.log(previewImage, 'our image')
-    if (!group) {
-        return <p> Group not found!</p>
-    }
-
+    const ownerCheck = user?.id === group.organizerId;
 
     return (
         <>

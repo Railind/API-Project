@@ -126,8 +126,8 @@ export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
 
 
 
-export const thunkGroupDeleter = (group) => async (dispatch) => {
-    const response = await csrfFetch(`/api/groups/${group.Id}`,
+export const thunkGroupDeleter = (groupId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/groups/${groupId}`,
         {
             method: 'DELETE',
             headers: {
@@ -138,7 +138,7 @@ export const thunkGroupDeleter = (group) => async (dispatch) => {
     if (response.ok) {
         const message = await response.json()
         //We'll delete events later
-        await dispatch(deleteGroup(group.id))
+        await dispatch(deleteGroup(groupId))
         return message
     }
     else return response.json()

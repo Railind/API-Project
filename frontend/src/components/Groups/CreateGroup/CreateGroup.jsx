@@ -19,7 +19,6 @@ const GroupCreationForm = () => {
     // const [previewImg, setPreviewImg] = useState("")
     // const [images, setImages] = useState("")
     const [privacy, setPrivacy] = useState(false)
-    const [newGroupId, setNewGroupId] = useState(null)
 
 
     // const [validationErrors, setValidationErrors] = useState({})
@@ -37,14 +36,8 @@ const GroupCreationForm = () => {
     const submitForm = async (e) => {
         e.preventDefault()
         console.log(newGroupBody)
-        await dispatch(thunkGroupCreator(newGroupBody))
-            .then(async (res) => {
-                setNewGroupId(res.id)
-            })
-        // .catch(async (res) => {
-        //     const data = await res.json();
-        // }
-        // )
+        const newGroup = await dispatch(thunkGroupCreator(newGroupBody))
+        const newGroupId = newGroup.id
         navigate(`/groups/${newGroupId}`)
     }
 

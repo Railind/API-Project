@@ -1,30 +1,40 @@
 // import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { thunkEventDeleter } from "../../../store/events";
 import { useNavigate } from "react-router-dom";
+import { useModal } from "../../../context/Modal";
+import { useParams } from "react-router-dom";
 
 
+// -------------------------------------
 const DeleteEvent = ({ event }) => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const { eventId } = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const closeModal = useModal().closeModal; // Ensure closeModal is retrieved correctly
 
-    // console.log(event.id, 'This is our DELETED event ID')
+    const deleteHandler = async () => {
+        try {
+            await dispatch(thunkEventDeleter(eventId));
+            closeModal(); // Call closeModal function
+            navigate(`/groups/${event.groupId}`);
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    };
 
-    const group = useSelector(state => state.groups[event.groupId])
-    console.log(group, 'this is our group')
-    const groupId = group ? group.id : null;
+    const cancelHandler = () => {
+        closeModal();
+    };
 
-    const deleteHandler = async (e) => {
-        e.preventDefault()
-        dispatch(thunkEventDeleter(event.id))
-        navigate(`/groups/${groupId}`)
-    }
-
-
-    return <div className='delete-group'>
-        <p> Do you want to Delete this event?</p>
-        <button onClick={deleteHandler}>Confirm</button>
-    </div>
-}
+    return (
+        <div className='delete-group'>
+            <h1>Confirm Delete</h1>
+            <h3>Are you sure you want to remove this event?</h3>
+            <button id="delete-button" onClick={deleteHandler}>Yes (Delete Group)</button>
+            <button id="cancel-button" onClick={cancelHandler}>No (Keep Group)</button>
+        </div>
+    );
+};
 
 export default DeleteEvent
