@@ -37,7 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     organizerId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Users'
+        model: 'Users',
+        key: 'id'
       },
       allowNull: false
     },
