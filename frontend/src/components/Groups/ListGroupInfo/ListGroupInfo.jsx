@@ -12,12 +12,13 @@ function ListGroupInfo() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { groupId } = useParams()
-    // console.log(groupId, 'this is our groupId')
     const groups = useSelector(state => state.groups)
     const group = groups[groupId]
+
+    const user = useSelector(state => state.session.user)
+
     const eventsState = useSelector(state => state.events)
     let events = useSelector(state => state.groups[groupId]?.Events)
-    const user = useSelector(state => state.session.user)
     const eventCount = Object.values(eventsState).filter(event => event.groupId == groupId).length
     const organizerId = group.organizerId;
 
@@ -45,16 +46,20 @@ function ListGroupInfo() {
     const organizer = group?.Members?.[organizerId];
     console.log(organizer)
 
-    const currentTime = new Date()
     const upcomingEvents = []
     const pastEvents = []
+
+
+    const currentTime = new Date()
     if (events) {
         events.sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
 
-        events?.forEach(event => {
-            console.log(event.startDate, 'STARTDATE OF EACH EVENT')
-            console.log(currentTime)
-            new Date(event.startDate) < currentTime ? pastEvents.push(event) : upcomingEvents.push(event);
+        events.forEach(event => {
+            if (new Date(event.startDate) < currentTime) {
+                pastEvents.push(event);
+            } else {
+                upcomingEvents.push(event);
+            }
         })
     }
 
@@ -77,8 +82,6 @@ function ListGroupInfo() {
         return <p> Group not found!</p>
     }
 
-    // console.log('ownerCheck:', ownerCheck(group));
-    // console.log('memberCheck:', memberCheck);
 
     return (
         <>
@@ -141,6 +144,7 @@ function ListGroupInfo() {
                                 </div>
                             ))}
                         </div>
+
 
                     </div>
                 </li>

@@ -15,6 +15,8 @@ import EditGroup from './components/Groups/EditGroup/EditGroup';
 import ListEvents from './components/Events/ListEvents/ListEvents';
 import ListEventInfo from './components/Events/ListEventInfo/ListEventInfo';
 import EventCreationForm from './components/Events/CreateEvent/CreateEvent';
+import { Modal } from './context/Modal';
+import { ModalProvider } from './context/Modal';
 function Layout() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -29,8 +31,11 @@ function Layout() {
 
   return (
     <>
-      <Navigation isLoaded={isLoaded} />
-      {isLoaded && <Outlet />}
+      <ModalProvider>
+        <Navigation isLoaded={isLoaded} />
+        {isLoaded && <Outlet />}
+        <Modal />
+      </ModalProvider>
     </>
   );
 }
@@ -62,6 +67,10 @@ const router = createBrowserRouter([
         element: <EditGroup />
       },
       {
+        path: 'groups/:groupId/events/new',
+        element: <EventCreationForm />
+      },
+      {
         path: '/events',
         element: <ListEvents />
       },
@@ -70,8 +79,8 @@ const router = createBrowserRouter([
         element: <ListEventInfo />
       },
       {
-        path: 'groups/:groupId/events/new',
-        element: <EventCreationForm />
+        path: '*',
+        element: <h1>Not Found</h1>
       }
     ]
   }

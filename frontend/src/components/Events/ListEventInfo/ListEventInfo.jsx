@@ -5,17 +5,20 @@ import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { thunkEventLoadInformation } from '../../../store/events';
 import { thunkGroupInfo } from '../../../store/groups';
+import DeleteEvent from '../DeleteEvent/DeleteEvent';
+import OpenModalButton from '../../OpenModalButton/OpenModalButton';
 // import DeleteEvent from '../DeleteEvent/DeleteEvent';
 function ListEventInfo() {
     // const navigate = useNavigate()
     const { eventId } = useParams()
     const dispatch = useDispatch()
     // console.log(eventId, 'this is our groupId')
-    // const user = useSelector(state => state.session.user)
+    const sessionUser = useSelector(state => state.session.user)
     const event = useSelector(state => state.events[eventId])
     const group = useSelector(state => state.groups[event?.groupId])
     //Testing the edit feature using these
-
+    // const ownerCheck = user?.id == group?.organizerId;
+    const organizerButtons = (!sessionUser || group.length === 1 && sessionUser.id !== group[0].Organizer.id) ? "hidden" : null
 
 
     useEffect(() => {
@@ -67,6 +70,23 @@ function ListEventInfo() {
                     <p>{event.endDate}</p>
 
 
+
+                    <div className={`${organizerButtons} event-card2-button-container`}>
+                        <button className="organizer-button event-button" onClick={() => (alert(`Feature Coming Soon...`))}>Update</button>
+                        <OpenModalButton
+                            buttonText="Delete"
+                            modalComponent={<DeleteEvent event={event} />}
+                        />
+                        {/* <button className="organizer-button event-button">Delete 2</button> */}
+                    </div>
+
+
+                    {/* {(ownerCheck) && <div className="OrganizerButton">
+                        <OpenModalButton
+                            buttonText="Delete"
+                            modalComponent={<DeleteEvent event={event} />}
+                        />
+                    </div>} */}
                     {/* <div>
                         <button onClick={() => navigate(`/events/${event.id}/edit`)}>
                             Update
