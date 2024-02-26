@@ -42,9 +42,9 @@ const EventCreationForm = () => {
 
     const submitForm = async (e) => {
         e.preventDefault()
-        console.log(newEventBody)
-        console.log('newDate', new Date())
-        console.log(groupId)
+        // console.log(newEventBody)
+        // console.log('newDate', new Date())
+        // console.log(groupId)
         await dispatch(thunkEventCreator(groupId, newEventBody))
             .then(async (newEvent) => {
                 dispatch(thunkCreateEventPreview(newEvent.id, previewImage));

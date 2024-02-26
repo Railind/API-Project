@@ -71,11 +71,11 @@ export const thunkGroupInfo = (groupId) => async (dispatch) => {
     try {
         const response = await csrfFetch(`/api/groups/${groupId}`)
         const group = await response.json()
-        console.log('Group information', group)
-        console.log(group.organizerId, 'Organizer Id')
-        console.log(group.Organizer, 'this is our organizer')
-        console.log(group.Organizer.firstName, 'this is our organizer FN')
-        console.log(group.Organizer.lastName, 'this is our organizer LN')
+        // console.log('Group information', group)
+        // console.log(group.organizerId, 'Organizer Id')
+        // console.log(group.Organizer, 'this is our organizer')
+        // console.log(group.Organizer.firstName, 'this is our organizer FN')
+        // console.log(group.Organizer.lastName, 'this is our organizer LN')
         dispatch(thunkGroupInfo(group))
         return group;
     }
@@ -105,8 +105,8 @@ export const thunkGroupCreator = (group) => async (dispatch) => {
 
 
 export const thunkGroupEditor = (groupId, group) => async (dispatch) => {
-    console.log(group, 'group')
-    console.log(groupId, 'groupID')
+    // console.log(group, 'group')
+    // // console.log(groupId, 'groupID')
     const response = await csrfFetch(`/api/groups/${groupId}`,
         {
             method: 'PUT',
@@ -198,7 +198,7 @@ export const thunkGroupMemberLoader = (groupId) => async (dispatch) => {
 
     if (response.ok) {
         const members = await response.json()
-        console.log(members, 'these are our members')
+        // console.log(members, 'these are our members')
         dispatch(loadGroupMembers(groupId, members))
         return members
     }

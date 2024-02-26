@@ -16,7 +16,7 @@ const EditGroup = () => {
     const [state, setState] = useState("WE")
     const [privacy, setPrivacy] = useState(false)
     const { groupId } = useParams()
-    console.log(groupId)
+    // console.log(groupId)
     // const group = useSelector(state => state.groups[groupId])
     // const user = useSelector(state => state.session.user)
 
@@ -47,7 +47,7 @@ const EditGroup = () => {
 
     const submitForm = async (e) => {
         e.preventDefault()
-        console.log(updatedGroupBody)
+        // console.log(updatedGroupBody)
         await dispatch(thunkGroupEditor(groupId, updatedGroupBody))
         setTimeout(() => {
             navigate('/groups')

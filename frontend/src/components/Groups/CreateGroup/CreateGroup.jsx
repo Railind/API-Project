@@ -35,7 +35,7 @@ const GroupCreationForm = () => {
 
     const submitForm = async (e) => {
         e.preventDefault()
-        console.log(newGroupBody)
+        // console.log(newGroupBody)
         const newGroup = await dispatch(thunkGroupCreator(newGroupBody))
         const newGroupId = newGroup.id
         navigate(`/groups/${newGroupId}`)
